@@ -20,7 +20,7 @@ model.add(Dense(1))
 #3. 컴파일, 훈련
 model.compile(loss='mse', optimizer='adam')
 
-model.fit(x, y, epochs=30, batch_size=1)                  # 50번 돌리니
+model.fit(x, y, epochs=30, batch_size=1)                  # 30번 돌리니
 
 #4. 평가, 예측
 loss = model.evaluate(x, y)
@@ -28,6 +28,6 @@ print('loss : ', loss)
 result = model.predict([4])
 print('4의 예측값 : ', result)
 
-# loss :  0.0006746065337210894
-# 4의 예측값 :  [[4.0004954]]
+# loss :  6.159683834994212e-05
+# 4의 예측값 :  [[4.000191]]
 # 30번 돌렸을때
