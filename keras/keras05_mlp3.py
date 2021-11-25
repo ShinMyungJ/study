@@ -1,4 +1,5 @@
 # MLP(Multi-Layer Perceptron) 다층 퍼셉트론은 퍼셉트론으로 이루어진 층(layer) 여러 개를 순차적으로 붙여놓은 형태
+# 퍼셉트론은 초기의 인공 신경망으로 다수의 입력으로부터 하나의 결과를 내보내는 알고리즘
 
 import numpy as np
 from tensorflow.keras.models import Sequential
