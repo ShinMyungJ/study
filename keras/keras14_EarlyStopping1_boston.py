@@ -1,3 +1,9 @@
+# EarlyStopping을 사용하여 모델 훈련을 멈췄을때,
+# Best 성능을 가진 모델을 저장하는 것인가? Patience만큼 다음 모델이 저장되는 것인가?
+# Best 성능 모델에서 Patience만큼 지난 모델이 저장된다.
+# 그래서 callback함수를 이용하여야 한다.
+
+
 from sklearn.datasets import load_boston
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
