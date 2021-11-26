@@ -17,7 +17,7 @@ print(x.shape, y.shape)
 print(datasets.feature_names)
 print(datasets.DESCR)
 '''
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, shuffle=True, random_state=49)
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, shuffle=True, random_state=49)
 
 # R2
 # 0.62 이상이상
@@ -48,5 +48,5 @@ from sklearn.metrics import r2_score
 r2 = r2_score(y_test, y_predict)        # r2 보다 loss가 더 신뢰성 있다
 print('r2 스코어 : ', r2)
 
-# loss :  1998.2904052734375
-# r2 스코어 :  0.6249674646420302
+# loss :  1969.408935546875
+# r2 스코어 :  0.6303878386265211
