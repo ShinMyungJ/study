@@ -2,6 +2,7 @@
 # Best 성능을 가진 모델을 저장하는 것인가? Patience만큼 다음 모델이 저장되는 것인가?
 # Best 성능 모델에서 Patience만큼 지난 모델이 저장된다.
 # 그래서 callback함수를 이용하여야 한다.
+# 훈련의 목표는 loss를 최소화 하는 것이라고 가정
 
 
 from sklearn.datasets import load_boston
@@ -36,7 +37,11 @@ model.add(Dense(1))
 model.compile(loss='mse', optimizer='adam')
 
 from tensorflow.keras.callbacks import EarlyStopping                  # 파라미터도 있으면 정리
-es = EarlyStopping(monitor='val_loss', patience=3, mode='min', verbose=1)
+es = EarlyStopping(monitor='val_loss', patience=3, mode='min', verbose=1)   # patience : 개선되지 않은 Epoch의 수. 그 후에 훈련이 중단됨
+                                                                            # mode : 'auto', 'min', 'max' 중 하나. 'auto'는 monitoring이 증가를 멈추면 방향이 자동으로 유추
+                                                                            # restore_best_weights : model의 weight를 복원할지 여부. monitoring된 수량의 가장 좋은 값을 가진 epoch
+                                                                            #                       'False'이면 마지막 단계에서 얻은 model의 weight가 훈련에 사용됨
+                                                                            #                       'baseline'과 관련있으며, epoch가 없다면 해당 세트의 최고의 epoch에서 가중치를 복원
 
 start = time.time()
 hist = model.fit(x_train, y_train, epochs=10000, batch_size=1, validation_split=0.2, callbacks=[es])
