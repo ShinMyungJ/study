@@ -3,6 +3,9 @@
 # Best 성능 모델에서 Patience만큼 지난 모델이 저장된다.
 # 그래서 callback함수를 이용하여야 한다.
 # 훈련의 목표는 loss를 최소화 하는 것이라고 가정
+# self.best_weights = self.model.get_weights()
+# ModelCheckPoint
+
 
 
 from sklearn.datasets import load_boston
