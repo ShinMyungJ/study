@@ -3,8 +3,8 @@
 # Best 성능 모델에서 Patience만큼 지난 모델이 저장된다.
 # 그래서 callback함수를 이용하여야 한다.
 # 훈련의 목표는 loss를 최소화 하는 것이라고 가정
-# self.best_weights = self.model.get_weights()
-# ModelCheckPoint
+# ModelCheckPoint(객체) : validation performance가 좋은 경우, 무조건 이때의 parameter들을 저장
+# 이를 통해 training이 중지되었을때, 가장 validation performance가 높았던 모델을 반환할 수 있음
 
 
 
@@ -39,12 +39,14 @@ model.add(Dense(1))
 #3. 컴파일, 훈련
 model.compile(loss='mse', optimizer='adam')
 
-from tensorflow.keras.callbacks import EarlyStopping                  # 파라미터도 있으면 정리
-es = EarlyStopping(monitor='val_loss', patience=3, mode='min', verbose=1)   # patience : 개선되지 않은 Epoch의 수. 그 후에 훈련이 중단됨
-                                                                            # mode : 'auto', 'min', 'max' 중 하나. 'auto'는 monitoring이 증가를 멈추면 방향이 자동으로 유추
-                                                                            # restore_best_weights : model의 weight를 복원할지 여부. monitoring된 수량의 가장 좋은 값을 가진 epoch
-                                                                            #                       'False'이면 마지막 단계에서 얻은 model의 weight가 훈련에 사용됨
-                                                                            #                       'baseline'과 관련있으며, epoch가 없다면 해당 세트의 최고의 epoch에서 가중치를 복원
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheackPoint                  # 파라미터도 있으면 정리
+es = EarlyStopping(monitor='val_loss', patience=3, mode='min',
+                   verbose=1, restore_best_weights=True)          # patience : 개선되지 않은 Epoch의 수. 그 후에 훈련이 중단됨
+                                                                  # mode : 'auto', 'min', 'max' 중 하나. 'auto'가 기본값이며, 모델이 알아서 판단함
+                                                                  # restore_best_weights : model의 weight를 복원할지 여부. model의 weight를 monitor하고 있던 값이 가장 좋았을때의
+                                                                  #                        weight로 복원함 'False'이면 마지막 training이 끝난 후의 weight로 놔둠
+                                                                  # baseline : 모델이 달성해야하는 최소한의 기준값을 선정. patience 이내에 모델이 baseline보다 개선됨이 보이지 않으면
+                                                                  #            Training를 중단. ex)patience=3, baseline=0.98 3번의 training안에 0.98의 정확도를 달성 못하면 training 종료
 
 start = time.time()
 hist = model.fit(x_train, y_train, epochs=10000, batch_size=1, validation_split=0.2, callbacks=[es])
