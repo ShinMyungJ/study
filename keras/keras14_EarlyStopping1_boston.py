@@ -7,7 +7,6 @@
 # 이를 통해 training이 중지되었을때, 가장 validation performance가 높았던 모델을 반환할 수 있음
 
 
-
 from sklearn.datasets import load_boston
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
