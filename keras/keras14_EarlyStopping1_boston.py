@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import time
 
 from sklearn.model_selection import train_test_split
+from tensorflow.python.keras.callbacks import ModelCheckpoint
 
 #1. 데이터
 
@@ -39,7 +40,7 @@ model.add(Dense(1))
 #3. 컴파일, 훈련
 model.compile(loss='mse', optimizer='adam')
 
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheackPoint                  # 파라미터도 있으면 정리
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint                  # 파라미터도 있으면 정리
 es = EarlyStopping(monitor='val_loss', patience=3, mode='min',
                    verbose=1, restore_best_weights=True)          # patience : 개선되지 않은 Epoch의 수. 그 후에 훈련이 중단됨
                                                                   # mode : 'auto', 'min', 'max' 중 하나. 'auto'가 기본값이며, 모델이 알아서 판단함
