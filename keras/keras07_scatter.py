@@ -25,7 +25,7 @@ model.fit(x_train, y_train, epochs=100, batch_size=1)
 #4. 평가, 예측
 loss = model.evaluate(x_test, y_test)
 print('loss : ', loss)
-y_predict = model.predict(x)
+y_predict = model.predict(x_test)
 
 plt.scatter(x, y)
 plt.plot(x, y_predict, color='red')

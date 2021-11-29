@@ -2,7 +2,6 @@ from sklearn.datasets import load_boston, load_diabetes
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 
 from sklearn.model_selection import train_test_split
