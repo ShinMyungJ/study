@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import time
 
 from sklearn.model_selection import train_test_split
-from tensorflow.python.keras.callbacks import ModelCheckpoint
 
 #1. 데이터
 

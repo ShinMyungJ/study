@@ -46,3 +46,15 @@ print(results)
 # loss :  [0.33236247301101685, 0.8947368264198303]
 
 # Sigmoid 정의
+# Sigmoid S(x) = 1/1+e^-x = e^x/e^x+1
+# 0< S(x) < 1
+# 이렇게 하면 결과값 0과 1로 한정 시킬 수 있음
+# 이진분류 결과값은 0~1 사이이며 결과값이 0 or 1이 아님
+# 정해진 라벨값만 나오며 0.5를 기준으로 정해줌
+# 이진분류는 activation = 'Sigmoid', loss = 'binaryCrossEntropy' '만' 쓴다
+
+# 참고
+# hyper parameter tuning은 알아서 할 것
+# 결과값 or (hidden layer & 결과값)에 sigmoid를 사용해도 됨
+# sigmoid를 사용하여 결과값 예측율을 많이 올려놓음
+ 
