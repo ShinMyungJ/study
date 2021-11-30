@@ -32,10 +32,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 model = Sequential()
 model.add(Dense(5, activation='linear', input_dim=13))   # 히든레이어에 sigmoid를 중간중간 사용해도 된다
-model.add(Dense(20, activation='sigmoid'))
+model.add(Dense(20, activation='linear'))
 model.add(Dense(10, activation='linear'))
 model.add(Dense(10))
-model.add(Dense(3, activation='sigmoid'))
+model.add(Dense(3, activation='softmax'))
 
 #3. 컴파일, 훈련
 from tensorflow.keras.callbacks import EarlyStopping
