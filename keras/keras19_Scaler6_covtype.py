@@ -20,9 +20,9 @@ y = ohe.fit_transform(y.reshape(-1,1))
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, random_state=66)
 
 # scaler = MinMaxScaler()
-scaler = StandardScaler()
+# scaler = StandardScaler()
 # scaler = RobustScaler()
-# scaler = MaxAbsScaler()
+scaler = MaxAbsScaler()
 
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
@@ -69,11 +69,18 @@ loss :  0.6383407115936279
 accurcy :  0.7196966409683228
 
 # Standard
-
+6026/6026 [==============================] - 4s 657us/step - loss: 0.6365 - accuracy: 0.7222 - val_loss: 0.6359 - val_accuracy: 0.7207
+loss :  0.634918212890625
+accurcy :  0.7247968912124634
 
 # Rubust
-
+6026/6026 [==============================] - 4s 654us/step - loss: 0.6348 - accuracy: 0.7223 - val_loss: 0.6311 - val_accuracy: 0.7256
+loss :  0.6335583329200745
+accurcy :  0.7221062183380127
 
 # MaxAbs
+6026/6026 [==============================] - 4s 670us/step - loss: 0.6396 - accuracy: 0.7196 - val_loss: 0.6375 - val_accuracy: 0.7231
+loss :  0.636986255645752
+accurcy :  0.7233626246452332
 
 '''

@@ -1,9 +1,3 @@
-### 과제1. 평균값과 중위값의 차이를 정리하라 ###
-# 평균값 : N 개의 변량을 모두 더하여 그 개수로 나누어 놓은 숫자. 또는 산술평균.
-# 중위값 : N 개의 값을 크기 순으로 늘어놓았을 때 가장 가운데에 있는 숫자. 표본들의 격차가 클때 사용.
-
-# log 값의 문제점 : 0이 나오면 안되기 때문에 +1 해줌
-
 import numpy as np
 import pandas as pd
 from sklearn.metrics import r2_score, mean_squared_error
@@ -71,9 +65,9 @@ y = np.log1p(y)             # log1p : y값을 로그변환 시킬때 1을 더해
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, shuffle=True, random_state=66)
 
 # scaler = MinMaxScaler()
-scaler = StandardScaler()
+# scaler = StandardScaler()
 # scaler = RobustScaler()
-# scaler = MaxAbsScaler()
+scaler = MaxAbsScaler()
 
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
@@ -104,23 +98,37 @@ print('r2 스코어 : ', r2)
 rmse = RMSE(y_test, y_pred)
 print("RMSE : ", rmse)
 
-# loss :  23809.03125
-# r2 스코어 :  0.24673393686610068
-# RMSE :  154.30175497542078
+'''
+# 결과
 
-# 로그변환 후
-# loss :  1.4543837308883667
-# r2 스코어 :  0.2577987458594312
-# RMSE :  1.2059783455683972
+# 그냥
+871/871 [==============================] - 0s 525us/step - loss: 1.5701 - val_loss: 1.5854
+loss :  1.479065179824829
+r2 스코어 :  0.24520321962822522
+RMSE :  1.216168322827936
 
+# MinMax
+871/871 [==============================] - 0s 519us/step - loss: 1.5581 - val_loss: 1.4424
+loss :  1.4533556699752808
+r2 스코어 :  0.2583234489688635
+RMSE :  1.2055519838095459
 
-######################제출용 제작##############################
-results = model.predict(test_file)
+# Standard
+871/871 [==============================] - 0s 524us/step - loss: 1.5541 - val_loss: 1.4231
+loss :  1.4627411365509033
+r2 스코어 :  0.25353387329123256
+RMSE :  1.2094383076442872
 
-submit_file['count'] = results
+# Rubust
+871/871 [==============================] - 0s 524us/step - loss: 1.5636 - val_loss: 1.4106
+loss :  1.4641647338867188
+r2 스코어 :  0.2528073440050165
+RMSE :  1.2100267326356795
 
-print(submit_file[:10])
+# MaxAbs
+871/871 [==============================] - 0s 513us/step - loss: 1.5568 - val_loss: 1.5726
+loss :  1.4596772193908691
+r2 스코어 :  0.25509749475956345
+RMSE :  1.208170939309445
 
-submit_file.to_csv(path + "aaaaaa.csv", index=False)
-
-#3.10659
+'''
