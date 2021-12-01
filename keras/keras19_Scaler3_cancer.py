@@ -29,7 +29,7 @@ x_test = scaler.transform(x_test)
 model = Sequential()
 model.add(Dense(5, activation='linear', input_dim=30))   # 히든레이어에 sigmoid를 중간중간 사용해도 된다
 model.add(Dense(20, activation='sigmoid'))
-model.add(Dense(10, activation='linear'))
+model.add(Dense(10, activation='relu'))
 model.add(Dense(10))
 model.add(Dense(1, activation='sigmoid'))
 
@@ -67,7 +67,7 @@ accurcy :  0.9824561476707458
 loss :  0.04186691343784332
 accurcy :  0.9824561476707458
 
-# Rubust
+# Robust
 318/318 [==============================] - 0s 544us/step - loss: 0.0638 - accuracy: 0.9748 - val_loss: 0.0303 - val_accuracy: 0.9750
 loss :  0.04804043471813202
 accurcy :  0.9824561476707458
@@ -77,4 +77,30 @@ accurcy :  0.9824561476707458
 loss :  0.073243148624897
 accurcy :  0.9766082167625427
 
+# relu를 사용한 결과
+
+# 그냥
+318/318 [==============================] - 0s 575us/step - loss: 0.2442 - accuracy: 0.9119 - val_loss: 0.4895 - val_accuracy: 0.8250
+loss :  0.3191918134689331
+accurcy :  0.871345043182373
+
+# MinMax
+318/318 [==============================] - 0s 556us/step - loss: 0.0706 - accuracy: 0.9748 - val_loss: 0.0337 - val_accuracy: 0.9750
+loss :  0.08240047842264175
+accurcy :  0.9824561476707458
+
+# Standard
+318/318 [==============================] - 0s 568us/step - loss: 0.0510 - accuracy: 0.9843 - val_loss: 0.0586 - val_accuracy: 0.9750
+loss :  0.04126803204417229
+accurcy :  0.988304078578949
+
+# Robust
+318/318 [==============================] - 0s 568us/step - loss: 0.0437 - accuracy: 0.9874 - val_loss: 0.0661 - val_accuracy: 0.9750
+loss :  0.06147442013025284
+accurcy :  0.9766082167625427
+
+# MaxAbs
+318/318 [==============================] - 0s 568us/step - loss: 0.0878 - accuracy: 0.9528 - val_loss: 0.0323 - val_accuracy: 0.9875
+loss :  0.08423151820898056
+accurcy :  0.9766082167625427
 '''

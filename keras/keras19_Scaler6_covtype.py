@@ -32,7 +32,7 @@ x_test = scaler.transform(x_test)
 
 model = Sequential()
 model.add(Dense(10, activation='linear', input_dim=54))   # 히든레이어에 sigmoid를 중간중간 사용해도 된다
-model.add(Dense(50, activation='linear'))
+model.add(Dense(50, activation='relu'))
 model.add(Dense(30, activation='linear'))
 model.add(Dense(15))
 model.add(Dense(7, activation='softmax'))
@@ -73,7 +73,7 @@ accurcy :  0.7196966409683228
 loss :  0.634918212890625
 accurcy :  0.7247968912124634
 
-# Rubust
+# Robust
 6026/6026 [==============================] - 4s 654us/step - loss: 0.6348 - accuracy: 0.7223 - val_loss: 0.6311 - val_accuracy: 0.7256
 loss :  0.6335583329200745
 accurcy :  0.7221062183380127
@@ -83,4 +83,30 @@ accurcy :  0.7221062183380127
 loss :  0.636986255645752
 accurcy :  0.7233626246452332
 
+# relu를 사용한 결과
+
+# 그냥
+6026/6026 [==============================] - 5s 850us/step - loss: 0.5346 - accuracy: 0.7686 - val_loss: 0.5343 - val_accuracy: 0.7710
+loss :  0.5243490934371948
+accurcy :  0.7735565304756165
+
+# MinMax
+6026/6026 [==============================] - 4s 668us/step - loss: 0.4486 - accuracy: 0.8093 - val_loss: 0.4460 - val_accuracy: 0.8104
+loss :  0.44336816668510437
+accurcy :  0.8129187822341919
+
+# Standard
+6026/6026 [==============================] - 4s 620us/step - loss: 0.4502 - accuracy: 0.8087 - val_loss: 0.4496 - val_accuracy: 0.8100
+loss :  0.44817522168159485
+accurcy :  0.8112435936927795
+
+# Robust
+6026/6026 [==============================] - 4s 644us/step - loss: 0.4305 - accuracy: 0.8201 - val_loss: 0.4328 - val_accuracy: 0.8204
+loss :  0.4305780827999115
+accurcy :  0.8219203352928162
+
+# MaxAbs
+6026/6026 [==============================] - 4s 636us/step - loss: 0.4646 - accuracy: 0.7996 - val_loss: 0.4605 - val_accuracy: 0.8041
+loss :  0.45904219150543213
+accurcy :  0.801863431930542
 '''
