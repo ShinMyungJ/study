@@ -25,6 +25,8 @@ train = pd.read_csv(path + 'train.csv')
 test_file = pd.read_csv(path + 'test.csv')
 # print(test)                     # (6493, 9)
 submit_file = pd.read_csv(path + 'sampleSubmission.csv')
+
+
 # print(submit)                   # (6493, 2)
 
 # print(type(train))                  # <class 'pandas.core.frame.DataFrame'>
@@ -71,7 +73,6 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, shuffl
 #2. 모델구성
 model = Sequential()
 model.add(Dense(50, input_dim=8))
-model.add(Dense(40))
 model.add(Dense(25))
 model.add(Dense(10))
 model.add(Dense(1))
@@ -79,7 +80,7 @@ model.add(Dense(1))
 #3. 컴파일, 훈련
 model.compile(loss = 'mse', optimizer = 'adam')
 es = EarlyStopping(monitor='val_loss', patience=5, mode='auto', verbose=1, restore_best_weights=True)
-model.fit(x_train, y_train, epochs=20, batch_size=4, validation_split=0.2, callbacks=[es])
+model.fit(x_train, y_train, epochs=10, batch_size=8, validation_split=0.2, callbacks=[es])
 
 #4. 평가, 예측
 loss = model.evaluate(x_test, y_test)
