@@ -6,6 +6,8 @@ import pandas as pd
 import time
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler, LabelEncoder, OneHotEncoder
 from pandas import get_dummies
+from sklearn.svm import SVC
+from sklearn import metrics
 
 #1 데이터
 path = "../_data/dacon/wine/"  
@@ -46,7 +48,7 @@ y = get_dummies(y)
 # # y = to_categorical(y) #<=============== class 개수대로 자동으로 분류 해 준다!!! /// 간단!!
 
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle = True, random_state = 66)
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle = True, random_state = 13)
 
 # scaler = MinMaxScaler()
 # scaler = StandardScaler()
@@ -59,6 +61,7 @@ x_test = scaler.transform(x_test)
 test_file = scaler.transform(test_file)
 
 #2 모델구성
+
 model = Sequential()
 model.add(Dense(60, input_dim=x.shape[1]))
 model.add(Dense(46, activation='relu'))
@@ -69,16 +72,12 @@ model.add(Dense(12))
 model.add(Dense(5, activation='softmax'))
 
 #3. 컴파일, 훈련
+
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['accuracy']) # metrics=['accuracy'] 영향을 미치지 않는다
 from tensorflow.keras.callbacks import EarlyStopping
 patience_num = 50
 es = EarlyStopping(monitor='val_loss', patience=patience_num, mode = 'auto', verbose=1, restore_best_weights=True)
-
-start = time.time()
-
 model.fit(x_train, y_train, epochs = 1000, batch_size =1,validation_split=0.2,callbacks=[es])
-end = time.time() - start
-print('시간 : ', round(end,2) ,'초')
 
 #4 평가예측
 loss = model.evaluate(x_test,y_test)

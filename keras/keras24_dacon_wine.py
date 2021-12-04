@@ -6,6 +6,8 @@ import pandas as pd
 import time
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler, LabelEncoder, OneHotEncoder
 from pandas import get_dummies
+import seaborn as sns
+
 
 #1 데이터
 path = "../_data/dacon/wine/"  
@@ -49,8 +51,8 @@ from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle = True, random_state = 66)
 
 # scaler = MinMaxScaler()
-# scaler = StandardScaler()
-scaler = RobustScaler()
+scaler = StandardScaler()
+# scaler = RobustScaler()
 # scaler = MaxAbsScaler()
 
 scaler.fit(x_train)
