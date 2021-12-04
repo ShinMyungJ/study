@@ -6,8 +6,7 @@ import pandas as pd
 import time
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler, LabelEncoder, OneHotEncoder
 from pandas import get_dummies
-from sklearn.svm import SVC
-from sklearn import metrics
+from sklearn.linear_model import LogisticRegression
 
 #1 데이터
 path = "../_data/dacon/wine/"  
@@ -48,7 +47,7 @@ y = get_dummies(y)
 # # y = to_categorical(y) #<=============== class 개수대로 자동으로 분류 해 준다!!! /// 간단!!
 
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle = True, random_state = 13)
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle = True, random_state = 66)
 
 # scaler = MinMaxScaler()
 # scaler = StandardScaler()
@@ -60,14 +59,16 @@ x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 test_file = scaler.transform(test_file)
 
+# lr = LogisticRegression()
+# lr.fit(x_train, y_train)
+
 #2 모델구성
 
 model = Sequential()
-model.add(Dense(60, input_dim=x.shape[1]))
-model.add(Dense(46, activation='relu'))
-model.add(Dense(35))
-model.add(Dense(29, activation='sigmoid'))
-model.add(Dense(19))
+model.add(Dense(48, input_dim=x.shape[1]))
+model.add(Dense(35, activation='relu'))
+model.add(Dense(24, activation='relu'))
+model.add(Dense(20, activation='sigmoid'))
 model.add(Dense(12))
 model.add(Dense(5, activation='softmax'))
 
@@ -77,7 +78,7 @@ model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['a
 from tensorflow.keras.callbacks import EarlyStopping
 patience_num = 50
 es = EarlyStopping(monitor='val_loss', patience=patience_num, mode = 'auto', verbose=1, restore_best_weights=True)
-model.fit(x_train, y_train, epochs = 1000, batch_size =1,validation_split=0.2,callbacks=[es])
+model.fit(x_train, y_train, epochs = 1000, batch_size =16, validation_split=0.2, callbacks=[es])
 
 #4 평가예측
 loss = model.evaluate(x_test,y_test)
@@ -94,6 +95,7 @@ submission['quality'] = result_recover
 
 # print(submission[:10])
 submission.to_csv(path + "bbbbbb.csv", index = False)
+
 print(result_recover)
 
 '''
