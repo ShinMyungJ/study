@@ -59,16 +59,27 @@ x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 test_file = scaler.transform(test_file)
 
+from sklearn.tree import DecisionTreeClassifier
+
+dt = DecisionTreeClassifier(random_state=42)
+dt.fit(x_train, y_train)
+
+dt = DecisionTreeClassifier(max_depth=3, random_state=42)
+dt.fit(x_train, y_train)
+
+dt = DecisionTreeClassifier(criterion='gini', min_impurity_decrease=0.0005, random_state=42)
+dt.fit(x_train, y_train)
+
+
 # lr = LogisticRegression()
 # lr.fit(x_train, y_train)
 
 #2 모델구성
 
 model = Sequential()
-model.add(Dense(48, input_dim=x.shape[1]))
-model.add(Dense(35, activation='relu'))
-model.add(Dense(24, activation='relu'))
-model.add(Dense(20, activation='sigmoid'))
+model.add(Dense(35, input_dim=x.shape[1], activation='relu'))
+model.add(Dense(28, activation='relu'))
+model.add(Dense(19, activation='sigmoid'))
 model.add(Dense(12))
 model.add(Dense(5, activation='softmax'))
 
@@ -78,7 +89,7 @@ model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['a
 from tensorflow.keras.callbacks import EarlyStopping
 patience_num = 50
 es = EarlyStopping(monitor='val_loss', patience=patience_num, mode = 'auto', verbose=1, restore_best_weights=True)
-model.fit(x_train, y_train, epochs = 1000, batch_size =16, validation_split=0.2, callbacks=[es])
+model.fit(x_train, y_train, epochs = 1000, batch_size =4, validation_split=0.2, callbacks=[es])
 
 #4 평가예측
 loss = model.evaluate(x_test,y_test)
