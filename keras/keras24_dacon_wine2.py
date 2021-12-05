@@ -7,6 +7,10 @@ import time
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler, LabelEncoder, OneHotEncoder
 from pandas import get_dummies
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+
 
 #1 데이터
 path = "../_data/dacon/wine/"  
@@ -50,8 +54,8 @@ from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle = True, random_state = 66)
 
 # scaler = MinMaxScaler()
-# scaler = StandardScaler()
-scaler = RobustScaler()
+scaler = StandardScaler()
+# scaler = RobustScaler()
 # scaler = MaxAbsScaler()
 
 scaler.fit(x_train)
@@ -59,23 +63,72 @@ x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 test_file = scaler.transform(test_file)
 
-from sklearn.tree import DecisionTreeClassifier
 
-dt = DecisionTreeClassifier(random_state=42)
-dt.fit(x_train, y_train)
-
-dt = DecisionTreeClassifier(max_depth=3, random_state=42)
-dt.fit(x_train, y_train)
-
-dt = DecisionTreeClassifier(criterion='gini', min_impurity_decrease=0.0005, random_state=42)
-dt.fit(x_train, y_train)
 
 
 # lr = LogisticRegression()
 # lr.fit(x_train, y_train)
 
+
 #2 모델구성
 
+# LogisticRegression
+# lr = LogisticRegression(n_jobs=-1, random_state=66)
+# lr.fit(x_train, y_train)
+# lr_score = lr.score(x_test, y_test)
+
+#KNeighborsClassifier
+knn = KNeighborsClassifier(n_jobs=-1)
+knn.fit(x_train, y_train)
+knn_score = knn.score(x_test, y_test)
+
+# #DecisionTreeClassifier
+tree = DecisionTreeClassifier(random_state=66)
+tree.fit(x_train, y_train)
+tree_score = tree.score(x_test, y_test)
+
+#RandomForestClassifier
+rf = RandomForestClassifier(random_state=66, n_jobs=-1)
+rf.fit(x_train, y_train)
+rf_score = rf.score(x_test, y_test)
+
+# #GradientBoostingClassifier
+# gb = GradientBoostingClassifier(random_state=66)
+# gb.fit(x_train, y_train)
+# gb_score = gb.score(x_test, y_test)
+
+# print("lr : ", lr_score)
+print("knn : ", knn_score)
+print("tree : ", tree_score)
+print("rf : ", rf_score)
+# print("gb : ", gb_score)
+
+# #LogisticRegression
+# lr = LogisticRegression(n_jobs=-1, random_state=66)
+# lr.fit(train, y_train)
+# lr_score = lr.score(x_test, y_test)
+
+# #KNeighborsClassifier
+# knn = KNeighborsClassifier(n_jobs=-1)
+# knn.fit(train, y_train)
+# knn_score = knn.score(x_test, y_test)
+
+# #DecisionTreeClassifier
+# tree = DecisionTreeClassifier(random_state=66)
+# tree.fit(train, y_train)
+# tree_score = tree.score(x_test, y_test)
+
+# #RandomForestClassifier
+# rf = RandomForestClassifier(random_state=66, n_jobs=-1)
+# rf.fit(train, y_train)
+# rf_score = rf.score(x_test, y_test)
+
+# #GradientBoostingClassifier
+# gb = GradientBoostingClassifier(random_state=66)
+# gb.fit(train, y_train)
+# gb_score = gb.score(x_test, y_test)
+
+"""
 model = Sequential()
 model.add(Dense(35, input_dim=x.shape[1], activation='relu'))
 model.add(Dense(28, activation='relu'))
@@ -91,23 +144,27 @@ patience_num = 50
 es = EarlyStopping(monitor='val_loss', patience=patience_num, mode = 'auto', verbose=1, restore_best_weights=True)
 model.fit(x_train, y_train, epochs = 1000, batch_size =4, validation_split=0.2, callbacks=[es])
 
+
 #4 평가예측
 loss = model.evaluate(x_test,y_test)
 print("loss : ",loss[0])                      # List 형태로 제공된다
 print("accuracy : ",loss[1])
 
+"""
+
+
 ################################ 제출용 ########################################
-result = model.predict(test_file)
-print(result[:5])
-result_recover = np.argmax(result, axis=1).reshape(-1,1) + 4
-print(result_recover[:5])
-print(np.unique(result_recover))                           # value_counts = pandas에서만 먹힌다. 
-submission['quality'] = result_recover
+# result = rf.predict(test_file)
+# print(result[:5])
+# result_recover = np.argmax(result, axis=1).reshape(-1,1) + 4
+# print(result_recover[:5])
+# print(np.unique(result_recover))                           # value_counts = pandas에서만 먹힌다. 
+# submission['quality'] = result_recover
 
-# print(submission[:10])
-submission.to_csv(path + "bbbbbb.csv", index = False)
+# # print(submission[:10])
+# submission.to_csv(path + "bbbbbb.csv", index = False)
 
-print(result_recover)
+# print(result_recover)
 
 '''
 MinMax
