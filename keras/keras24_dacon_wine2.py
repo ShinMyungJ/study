@@ -1,6 +1,5 @@
-from sklearn.datasets import load_wine
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, Dropout
 import numpy as np
 import pandas as pd
 import time
@@ -54,8 +53,8 @@ from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle = True, random_state = 66)
 
 # scaler = MinMaxScaler()
-scaler = StandardScaler()
-# scaler = RobustScaler()
+# scaler = StandardScaler()
+scaler = RobustScaler()
 # scaler = MaxAbsScaler()
 
 scaler.fit(x_train)
@@ -78,19 +77,19 @@ test_file = scaler.transform(test_file)
 # lr_score = lr.score(x_test, y_test)
 
 #KNeighborsClassifier
-knn = KNeighborsClassifier(n_jobs=-1)
-knn.fit(x_train, y_train)
-knn_score = knn.score(x_test, y_test)
+# knn = KNeighborsClassifier(n_jobs=-1)
+# knn.fit(x_train, y_train)
+# knn_score = knn.score(x_test, y_test)
 
-# #DecisionTreeClassifier
-tree = DecisionTreeClassifier(random_state=66)
-tree.fit(x_train, y_train)
-tree_score = tree.score(x_test, y_test)
+# # #DecisionTreeClassifier
+# tree = DecisionTreeClassifier(random_state=66)
+# tree.fit(x_train, y_train)
+# tree_score = tree.score(x_test, y_test)
 
-#RandomForestClassifier
-rf = RandomForestClassifier(random_state=66, n_jobs=-1)
-rf.fit(x_train, y_train)
-rf_score = rf.score(x_test, y_test)
+# #RandomForestClassifier
+# rf = RandomForestClassifier(random_state=66, n_jobs=-1)
+# rf.fit(x_train, y_train)
+# rf_score = rf.score(x_test, y_test)
 
 # #GradientBoostingClassifier
 # gb = GradientBoostingClassifier(random_state=66)
@@ -98,9 +97,9 @@ rf_score = rf.score(x_test, y_test)
 # gb_score = gb.score(x_test, y_test)
 
 # print("lr : ", lr_score)
-print("knn : ", knn_score)
-print("tree : ", tree_score)
-print("rf : ", rf_score)
+# print("knn : ", knn_score)
+# print("tree : ", tree_score)
+# print("rf : ", rf_score)
 # print("gb : ", gb_score)
 
 # #LogisticRegression
@@ -128,12 +127,11 @@ print("rf : ", rf_score)
 # gb.fit(train, y_train)
 # gb_score = gb.score(x_test, y_test)
 
-"""
 model = Sequential()
-model.add(Dense(35, input_dim=x.shape[1], activation='relu'))
-model.add(Dense(28, activation='relu'))
-model.add(Dense(19, activation='sigmoid'))
-model.add(Dense(12))
+model.add(Dense(29, input_dim=x.shape[1], activation='relu'))
+model.add(Dense(12, activation='relu'))
+model.add(Dense(8, activation='relu'))
+model.add(Dropout(rate = 0.2))
 model.add(Dense(5, activation='softmax'))
 
 #3. 컴파일, 훈련
@@ -142,7 +140,7 @@ model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics=['a
 from tensorflow.keras.callbacks import EarlyStopping
 patience_num = 50
 es = EarlyStopping(monitor='val_loss', patience=patience_num, mode = 'auto', verbose=1, restore_best_weights=True)
-model.fit(x_train, y_train, epochs = 1000, batch_size =4, validation_split=0.2, callbacks=[es])
+model.fit(x_train, y_train, epochs = 1000, batch_size =10, validation_split=0.2, callbacks=[es])
 
 
 #4 평가예측
@@ -150,21 +148,20 @@ loss = model.evaluate(x_test,y_test)
 print("loss : ",loss[0])                      # List 형태로 제공된다
 print("accuracy : ",loss[1])
 
-"""
 
 
-################################ 제출용 ########################################
-# result = rf.predict(test_file)
-# print(result[:5])
-# result_recover = np.argmax(result, axis=1).reshape(-1,1) + 4
-# print(result_recover[:5])
-# print(np.unique(result_recover))                           # value_counts = pandas에서만 먹힌다. 
-# submission['quality'] = result_recover
+############################### 제출용 ########################################
+result = model.predict(test_file)
+print(result[:5])
+result_recover = np.argmax(result, axis=1).reshape(-1,1) + 4
+print(result_recover[:5])
+print(np.unique(result_recover))                           # value_counts = pandas에서만 먹힌다. 
+submission['quality'] = result_recover
 
-# # print(submission[:10])
-# submission.to_csv(path + "bbbbbb.csv", index = False)
+# print(submission[:10])
+submission.to_csv(path + "bbbbbb.csv", index = False)
 
-# print(result_recover)
+print(result_recover)
 
 '''
 MinMax

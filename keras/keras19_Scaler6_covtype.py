@@ -41,7 +41,7 @@ model.add(Dense(7, activation='softmax'))
 
 from tensorflow.keras.callbacks import EarlyStopping
 es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1, restore_best_weights=True)
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])        
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.fit(x_train, y_train, epochs=100, batch_size=54, validation_split=0.2, callbacks=[es])
 
 #4. 평가, 예측
