@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense
+import time
 
 #1. 데이터
 
@@ -33,9 +34,10 @@ model.add(Dense(8))
 model.add(Dense(1))
 
 #3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')                               # weight를 load 해줄때, compile까지 명시해줘야 한다
 
-model.compile(loss="mse", optimizer="adam")
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+############################################################################
 import datetime
 date = datetime.datetime.now()
 datetime = date.strftime("%m%d_%H%M")   # 월일_시분
@@ -43,12 +45,18 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 2500(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k27_', datetime, '_', filename])
+model_path = "".join([filepath, 'k27_1_', datetime, '_', filename])
                    # ./_ModelCheckPoint/k26_1206_1656_2500-0.3724.hdf5
+#############################################################################
 
-es = EarlyStopping(monitor='val_loss', patience=30, mode='min', verbose=1, restore_best_weights=True)
-mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath = model_path)
-hist = model.fit(x_train, y_train, epochs=500, batch_size=1, validation_split=0.2, callbacks=[es])
+es = EarlyStopping(monitor="val_loss", patience=10, mode="min", verbose=1, restore_best_weights=False)
+mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
+
+start = time.time()
+hist = model.fit(x_train, y_train, epochs=100, batch_size=13, validation_split=0.2, callbacks=[es, mcp])
+end = time.time() - start
+
+print("걸린시간 : ", round(end, 3), '초')
 
 # model.save("./_save/keras27_1_save_model.h5")
 
@@ -93,6 +101,6 @@ print('r2 스코어 : ', r2)
 # loss :  16.342443466186523
 # r2 스코어 :  0.802190537388543
 
-# # ModelCheckPoint 사용했을 경우
+# # ModelCheckPoint 사용했을 경우 낮은 loss값과 좋은 r2스코어가 나옴
 # loss :  10.850522994995117
 # r2 스코어 :  0.8686649205467231
