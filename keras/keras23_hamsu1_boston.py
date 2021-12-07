@@ -4,7 +4,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, Ma
 import numpy as np
 import pandas as pd
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.layers import Dense, Input, Dropout
 
 #1. 데이터
 
@@ -32,7 +32,8 @@ x_test = scaler.transform(x_test)
 input1 = Input(shape=(13,))
 dense1 = Dense(50)(input1)
 dense2 = Dense(30, activation='relu')(dense1)
-dense3 = Dense(15)(dense2)
+drop1 = Dropout(0.2)(dense2)
+dense3 = Dense(15)(drop1)
 dense4 = Dense(8)(dense3)
 output1 = Dense(1)(dense4)
 model = Model(inputs=input1, outputs=output1)
