@@ -1,7 +1,7 @@
 from os import access
 import numpy as np
 from tensorflow.keras.datasets import mnist
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Conv2D, Flatten
 from tensorflow.python.keras.layers.core import Dropout
 
@@ -27,12 +27,14 @@ y_test = to_categorical(y_test)
 
 model = Sequential()
 model.add(Conv2D(10, kernel_size=(2,2), input_shape=(28, 28, 1)))
-model.add(Conv2D(7, (3,3), activation='relu'))
+model.add(Conv2D(5, (2,2), activation='relu'))
+model.add(Dropout(0.2))
 model.add(Conv2D(7, (2,2), activation='relu'))
 model.add(Flatten())                                         
-model.add(Dense(120))
-model.add(Dropout(0.5))
-model.add(Dense(36))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
 # #3. 컴파일, 훈련
@@ -47,10 +49,11 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
 model_path = "".join([filepath, 'k30_2_', datetime, '_', filename])
-es = EarlyStopping(monitor='accuracy', patience=5, mode='auto', verbose=1, restore_best_weights=True)
+es = EarlyStopping(monitor='accuracy', patience=10, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="accuracy", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
-hist = model.fit(x_train, y_train, epochs=20, batch_size=32, validation_split=0.2, callbacks=[es, mcp])
+hist = model.fit(x_train, y_train, epochs=20, batch_size=16, validation_split=0.3, callbacks=[es, mcp])
 
+# model = load_model("")
 
 #4. 평가, 예측
 
@@ -59,7 +62,8 @@ result = model.predict(x_test)
 print('loss : ', loss[0])
 print('accurcy : ', loss[1])
 
-
+# loss :  0.07771419733762741
+# accurcy :  0.9807000160217285
 
 # 평가지표 acc
 # 0.98
