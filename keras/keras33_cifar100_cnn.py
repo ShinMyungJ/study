@@ -83,3 +83,6 @@ loss = model.evaluate(x_test,y_test)
 y_predict = model.predict(x_test)
 print("loss : ",loss[0])
 print("accuracy : ",loss[1])
+
+# loss :  2.829432725906372
+# accuracy :  0.310699999332428

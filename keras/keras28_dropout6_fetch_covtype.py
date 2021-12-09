@@ -67,7 +67,6 @@ results = model.predict(x_test[:7])
 print(y_test[:7])
 print(results)
 
-
 '''
 # 결과
 

@@ -23,7 +23,7 @@ from tensorflow.keras.utils import to_categorical
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
 
-# #2. 모델 구성
+#2. 모델 구성
 
 model = Sequential()
 model.add(Conv2D(10, kernel_size=(2,2), input_shape=(28, 28, 1)))
@@ -37,7 +37,7 @@ model.add(Dense(32, activation='relu'))
 model.add(Dense(16, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
-# #3. 컴파일, 훈련
+#3. 컴파일, 훈련
 
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
