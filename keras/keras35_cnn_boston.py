@@ -115,3 +115,5 @@ print(y_test.shape, y_predict.shape)
 r2 = r2_score(y_test, y_predict)
 print('r2 스코어 : ', r2)
 
+# loss :  10.297506332397461
+# r2 스코어 :  0.8753586643471483
