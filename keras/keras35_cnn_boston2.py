@@ -1,119 +1,125 @@
 from sklearn.datasets import load_boston
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
 
-#1. 데이터
-datasets = load_boston()
-x = datasets.data
-y = datasets.target
+dataset = load_boston()
 
-print(x)
-print(y) 
-print(x.shape)      # (506, 13) -> (506, 13, 1, 1)
-print(y.shape)      # (506, )
-
-print(datasets.feature_names)
-# print(datasets.DESCR)
-
-# data_x = pd.DataFrame(x)
-# print(type(data_x))
-# x = data_x.drop(['CHAS'], axis =1)
-# print(type(x))
-
-# x_train =  x_train.drop('CHAS', axis =1)
-# print(x_train)
-
-# 완료하시오!!
-# train 0.7
-# R2 0.8 이상
-
-# cnn 맹그러
+x = dataset.data
+y = dataset.target
 
 import pandas as pd
-xx = pd.DataFrame(x, columns=datasets.feature_names)
-print(type(xx))
-print(xx)
-# print(datasets.corr())
+xx = pd.DataFrame(x, columns=dataset.feature_names)
 
-print(xx.corr())                    # 양의 상관관계 'weight' 가 양수, 음의 상관관계 'weight' 가 음수
-
-# xx['price'] = y
-
-print(xx)
-
-x = xx.drop(['CHAS'], axis =1)
-print(x.columns)
-print(x.shape)
-
+#상관분석  (공분석)
+# Y를 넣고 상관관계 분서
+'''
+xx['price'] = y
+import matplotlib.pyplot as plt
+import seaborn as sns
+plt.figure(figsize=(10,10))
+sns.heatmap(data= xx.corr(), square=True, annot=True, cbar=True)
+plt.show()
+#---12개로 줄이면 506,12,1,1 혹은 506,4,3,1
+#줄여서 작업해라
+'''
+x = xx.drop(['CHAS'],axis=1) #---> Df
 x = x.to_numpy()
-
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-# plt.figure(figsize=(10,10))
-# sns.heatmap(data=xx.corr(), square=True, annot=True, cbar=True)
-# plt.show()
-
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, shuffle=True, random_state=66)
-
-scaler = MinMaxScaler()
-# scaler = StandardScaler()
-# scaler = RobustScaler()
-# scaler = MaxAbsScaler()
-
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
-x_test = scaler.transform(x_test)
-
-# print(x_train.shape)
-x_train = x_train.reshape(354, 3, 2, 2)
-x_test = x_test.reshape(152, 3, 2, 2)
-
-#2. 모델 구성
-
-model = Sequential()
-model.add(Conv2D(10, kernel_size=(2,2), input_shape=(3, 2, 2)))
-model.summary()
-model.add(Dropout(0.2))
-model.add(Flatten())                                         
-model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.2))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(16, activation='relu'))
-model.add(Dense(1))
-
-#3. 컴파일, 훈련
-
-model.compile(loss="mse", optimizer="adam")
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-import datetime
-date = datetime.datetime.now()
-datetime = date.strftime("%m%d_%H%M")   # 월일_시분
-# print(datetime)
-
-filepath = './_ModelCheckPoint/'
-filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k35_1_', datetime, '_', filename])
-es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1, restore_best_weights=True)
-mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
-hist = model.fit(x_train, y_train, epochs=500, batch_size=8, validation_split=0.3, callbacks=[es, mcp])
-
-# model = load_model("")
-
-#4. 평가, 예측
-# x_test = x_test.reshape(152, 12)
-loss = model.evaluate(x_test, y_test)
-print('loss : ', loss)
-y_predict = model.predict(x_test)
+# print(x)
 
 from sklearn.metrics import r2_score
-print(y_test.shape, y_predict.shape)
-r2 = r2_score(y_test, y_predict)
-print('r2 스코어 : ', r2)
 
-# loss :  10.297506332397461
-# r2 스코어 :  0.8753586643471483
+#데이터
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, y, 
+         train_size = 0.7, shuffle = True, random_state = 66) 
+
+scaler = StandardScaler()
+
+n = x_train.shape[0]# 
+# x_train_reshape = x_train.reshape(n,-1) #----> (50000,32,32,3) --> (50000, 32*32*3 ) 0~255
+x_train_transe = scaler.fit_transform(x_train) 
+print(x_train_transe.shape) #354,13 506,12
+x_train = x_train_transe.reshape(n,2,2,3) 
+
+m = x_test.shape[0]
+x_test = scaler.transform(x_test.reshape(m,-1)).reshape(m,2,2,3)
+
+print(x_train.shape)
+
+model = Sequential()
+model.add(Conv2D(128, kernel_size=(4,4),padding ='same',strides=1, input_shape = (2,2,3)))#
+model.add(MaxPooling2D())
+model.add(Conv2D(64,(2,2),padding ='same', activation='relu'))#<------------
+# model.add(MaxPooling2D())
+model.add(Dropout(0.2))
+model.add(Conv2D(32,(2,2),padding ='same', activation='relu'))
+# model.add(MaxPooling2D())
+model.add(Flatten())
+# print("==========================================★")
+model.add(Dense(100))
+model.add(Dropout(0.2))
+model.add(Dense(50))
+model.add(Dense(20))
+model.add(Dropout(0.5))
+model.add(Dense(1))
+
+#model.summary()#3,153
+#3. 컴파일, 훈련
+
+opt="adam"
+model.compile(loss = 'mse', optimizer = opt) # metrics=['accuracy'] 영향을 미치지 않는다
+########################################################################
+# model.compile(loss = 'mse', optimizer = 'adam')
+start = time.time()
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+import datetime
+epoch = 10000
+patience_num = 500
+date = datetime.datetime.now()
+datetime = date.strftime("%m%d_%H%M")
+filepath = "./_ModelCheckPoint/"
+filename = '{epoch:04d}-{val_loss:4f}.hdf5' #filepath + datetime
+model_path = "".join([filepath,'k35_cnn_boston_',datetime,"_",filename])
+es = EarlyStopping(monitor='val_loss', patience=patience_num, mode = 'auto', restore_best_weights=True)
+mcp = ModelCheckpoint(monitor='val_loss', mode = 'auto', verbose=1, save_best_only= True, filepath = model_path)
+hist = model.fit(x_train, y_train, epochs = epoch, validation_split=0.2, callbacks=[es,mcp], batch_size = 50)
+end = time.time() - start
+print('시간 : ', round(end,2) ,'초')
+########################################################################
+#4 평가예측
+loss = model.evaluate(x_test,y_test)
+print("loss : ",loss)
+
+y_predict = model.predict(x_test)
+r2 = r2_score(y_test,y_predict)
+print("R2 : ",r2)
+print("epochs :",epoch)
+'''
+<<dnn>>
+<<ModelCheckpoint 우수>>
+Epoch 01423: val_loss did not improve from 6.13479
+4/4 [==============================] - 0s 0s/step - loss: 5.5674
+loss :  5.567386627197266
+R2 :  0.9333908703456402
+<<Drop OUT>>
+Epoch 00097: val_loss did not improve from 25.87711
+4/4 [==============================] - 0s 997us/step - loss: 18.0372
+loss :  18.037235260009766
+R2 :  0.7841995627355511
+<<CNN>>
+시간 :  44.89 초
+5/5 [==============================] - 0s 801us/step - loss: 9.4039
+loss :  9.403949737548828
+R2 :  0.8861742911169088
+Epoch 00909: val_loss did not improve from 10.08448
+시간 :  23.86 초
+5/5 [==============================] - 0s 748us/step - loss: 7.7454
+loss :  7.745367050170898
+R2 :  0.906249825286233
+'''
