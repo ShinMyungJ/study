@@ -80,7 +80,8 @@ x_test = x_test.reshape(171, 3, 2, 5)
 
 model = Sequential()
 
-model.add(Conv2D(10, kernel_size=(2,2), input_shape=(3, 2, 5)))
+model.add(Conv2D(10, kernel_size=(2,2),padding='same', strides=1, input_shape=(3, 2, 5)))
+model.add(Conv2D(10, (2,2), padding='same', input_shape=(3, 2, 5)))
 model.summary()
 model.add(Dropout(0.2))
 model.add(Flatten())
