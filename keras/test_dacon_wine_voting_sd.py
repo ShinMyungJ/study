@@ -1,113 +1,88 @@
-from sklearn.datasets import load_wine
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense, Dropout
-from keras.wrappers.scikit_learn import KerasClassifier
-from sklearn.ensemble import VotingClassifier
 import numpy as np
 import pandas as pd
-import time
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler, LabelEncoder, OneHotEncoder
-from pandas import get_dummies
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler, LabelEncoder
+from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Activation, Dense, BatchNormalization, Dropout
-from lightgbm import LGBMClassifier
 
 #1 데이터
-path = "./_data/wine/"  
+path = "./_data/wine/" 
 train = pd.read_csv(path +"train.csv")
 test_file = pd.read_csv(path + "test.csv") 
-
-submission = pd.read_csv(path+"sample_Submission.csv") #제출할 값
-y = train['quality']
-x = train.drop(['id', 'quality'], axis =1) # , 'pH', 'free sulfur dioxide', 'residual sugar'
-print(x.shape)
-# x = train #.drop(['casual','registered','count'], axis =1) #
-
-le = LabelEncoder()                 # 라벨 인코딩은 n개의 범주형 데이터를 0부터 n-1까지 연속적 수치 데이터로 표현
-label = x['type']
-le.fit(label)
-x['type'] = le.transform(label)
-
-print(x)                          # type column의 white, red를 0,1로 변환
-print(x.shape)                    # (3231, 12)
-
-from tensorflow.keras.utils import to_categorical
-# one_hot = to_categorical(y,num_classes=len(np.unique(y)))
-
-test_file = test_file.drop(['id'], axis=1) # , 'pH', 'free sulfur dioxide', 'residual sugar'
-label2 = test_file['type']
-le.fit(label2)
-test_file['type'] = le.transform(label2)
+submission = pd.read_csv(path+"sample_Submission.csv")
 
 y = train['quality']
-# print(y.unique())                # [6 7 5 8 4]
-# y = get_dummies(y)
-# print(y)                         #        4  5  6  7  8
-                                   #  0     0  0  1  0  0
-                                   #  1     0  0  0  1  0
-                                   #  2     0  0  1  0  0
-                                   #  3     0  1  0  0  0
-                                   #  4     0  0  0  1  0
+x = train.drop(['id','quality'], axis =1)
+test_file =test_file.drop(['id'], axis=1)
 
-# y = to_categorical(y) #<=============== class 개수대로 자동으로 분류 해 준다!!! /// 간단!!
+x = x.drop(['citric acid'],axis =1)
+test_file =test_file.drop(['citric acid'],axis =1)
+
+#x = x.drop(['citric acid','pH','sulphates','total sulfur dioxide'],axis =1)
+#test_file =test_file.drop(['citric acid','pH','sulphates','total sulfur dioxide'],axis =1)
+
+le = LabelEncoder()
+le.fit(train['type'])
+x['type'] = le.transform(train['type'])
+
+le.fit(test_file['type'])
+test_file['type'] = le.transform(test_file['type'])
+
+y = y.to_numpy()
+x = x.to_numpy()
 
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.9, shuffle = True, random_state = 66)
+x_train, x_test, y_train, y_test = train_test_split(x, y, 
+         train_size = 0.8, shuffle = True, random_state = 66) #455.2 /114
 
-# scaler = MinMaxScaler()
-scaler = StandardScaler()
-# scaler = RobustScaler()
-# scaler = MaxAbsScaler()
-
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
+scaler = RobustScaler()
+x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
-test_file = scaler.transform(test_file)
 
-#2 모델구성
+model1 = RandomForestClassifier(oob_score= True, bootstrap=True, class_weight=None, criterion='gini',
+            max_depth=None, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None,min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, n_estimators= 1000, n_jobs=None, verbose=0, warm_start=False, random_state=61)
 
-from keras.layers import BatchNormalization
-def mlp_model():
-    model = Sequential()
-    model.add(Dense(100, input_dim=x.shape[1], activation='relu'))
-    # model.add(BatchNormalization())
-    model.add(Dense(130, activation='relu'))
-    # model.add(BatchNormalization())
-    model.add(Dropout(0.3))
-    model.add(Dense(80))
-    # model.add(BatchNormalization())
-    model.add(Dense(50))
-    # model.add(BatchNormalization())
-    model.add(Dense(5, activation='softmax'))
+model2 = GradientBoostingClassifier(n_estimators = 1000,random_state=66)
+
+model3 = ExtraTreesClassifier(oob_score= True, bootstrap=True, class_weight=None, criterion='gini',
+            max_depth=None, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None,min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, n_estimators= 1000, n_jobs=None, verbose=0, warm_start=False, random_state=61)
+
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingClassifier
+model4 = HistGradientBoostingClassifier(max_iter = 1000, random_state =66)
 
 
-#3. 컴파일, 훈련
-    model.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
-
-    return model
-
-model = mlp_model()
-
-# 서로 다른 모델을 만들어 합친다
-model1 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
-model1._estimator_type="classifier" 
-model2 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
-model2._estimator_type="classifier"
-model3 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
-model3._estimator_type="classifier"
-model4 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
-model4._estimator_type="classifier"
-model5 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
-model5._estimator_type="classifier"
-
-ensemble_clf = VotingClassifier(estimators = [('model1', model1), ('model2', model2), ('model3', model3), ('model4', model4), ('model5', model5)]
-                                , voting = 'soft')
-ensemble_clf.fit(x_train, y_train)
+from lightgbm import LGBMClassifier
+model5 = LGBMClassifier(n_estimators= 1000,random_state =66)
 
 
-################################ 제출용 ########################################
+voting_model = VotingClassifier(estimators=[ ('RandomForestClassifier', model1), ('GradientBoostingClassifier', model2)
+                                            ,('ExtraTreesClassifier', model3),('HistGradientBoostingClassifier', model4),('LGBMClassifier', model5) ], voting='hard')
 
-y_pred = ensemble_clf.predict(test_file)
-submission['quality'] = y_pred
-submission.to_csv(path + "em20.csv", index = False)
+classifiers = [model1, model2,model3,model4,model5]
+
+for classifier in classifiers:
+    classifier.fit(x_train, y_train)
+    pred = classifier.predict(x_test)
+    class_name = classifier.__class__.__name__
+    print("============== " + class_name + " ==================")
+    num = accuracy_score(y_test, pred)
+    print('{0} 정확도: {1}'.format(class_name, num))
+    y_pred_ = classifier.predict(test_file)
+    submission['quality'] = y_pred_
+    submission.to_csv(str(num) +"_" + class_name + "_dacon_wine_vote.csv", index=False)
+   
+
+voting_model.fit(x_train, y_train)
+pred = voting_model.predict(x_test)
+
+print('===================== 보팅 분류기 ========================')
+num = str(accuracy_score(y_test, pred))
+print('{0} 정확도: {1}'.format(num))
+
+y_pred_ = voting_model.predict(test_file)
+
+submission['quality'] = y_pred_
+submission.to_csv(num + "_dacon_wine.csv", index=False)
