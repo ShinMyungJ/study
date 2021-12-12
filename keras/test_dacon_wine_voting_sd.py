@@ -32,8 +32,7 @@ y = y.to_numpy()
 x = x.to_numpy()
 
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x, y, 
-         train_size = 0.8, shuffle = True, random_state = 66) #455.2 /114
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8, shuffle = True, random_state = 66) #455.2 /114
 
 scaler = RobustScaler()
 x_train = scaler.fit_transform(x_train)
