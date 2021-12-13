@@ -90,15 +90,15 @@ def mlp_model():
 model = mlp_model()
 
 # 서로 다른 모델을 만들어 합친다
-model1 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
+model1 = KerasClassifier(build_fn = mlp_model, epochs = 100, verbose = 1)
 model1._estimator_type="classifier" 
-model2 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
+model2 = KerasClassifier(build_fn = mlp_model, epochs = 100, verbose = 1)
 model2._estimator_type="classifier"
-model3 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
+model3 = KerasClassifier(build_fn = mlp_model, epochs = 100, verbose = 1)
 model3._estimator_type="classifier"
-model4 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
+model4 = KerasClassifier(build_fn = mlp_model, epochs = 100, verbose = 1)
 model4._estimator_type="classifier"
-model5 = KerasClassifier(build_fn = mlp_model, epochs = 200, verbose = 1)
+model5 = KerasClassifier(build_fn = mlp_model, epochs = 100, verbose = 1)
 model5._estimator_type="classifier"
 
 ensemble_clf = VotingClassifier(estimators = [('model1', model1), ('model2', model2), ('model3', model3), ('model4', model4), ('model5', model5)]
