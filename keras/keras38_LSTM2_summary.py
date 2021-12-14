@@ -71,3 +71,4 @@ result = model.predict([[[77],[78],[79]]])
 print(result)
 
 # [[80.057236]]
+# [[79.95282]]
