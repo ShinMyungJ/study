@@ -48,5 +48,5 @@ loss = model.evaluate(x, y)
 result = model.predict([[[5],[6],[7]]])
 print(result)
 
-[[7.9982038]]
-[[8.00024]]
+# [[7.9982038]]
+# [[8.00024]]
