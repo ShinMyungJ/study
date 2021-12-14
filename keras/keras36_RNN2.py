@@ -39,14 +39,14 @@ model.add(Dense(10, activation='relu'))                             # (num_featu
 model.add(Dense(1))
 model.summary()
 
-#3. 컴파일, 훈련
-model.compile(loss='mse', optimizer='adam')          # optimizer는 loss 값을 최적화 시킴
-model.fit(x, y, epochs=300, batch_size=1)
+# #3. 컴파일, 훈련
+# model.compile(loss='mse', optimizer='adam')          # optimizer는 loss 값을 최적화 시킴
+# model.fit(x, y, epochs=300, batch_size=1)
 
-#4. 평가, 예측
-loss = model.evaluate(x, y)
-result = model.predict([[[5],[6],[7]]])
-print(result)
+# #4. 평가, 예측
+# loss = model.evaluate(x, y)
+# result = model.predict([[[5],[6],[7]]])
+# print(result)
 
-[[7.9982038]]
-[[8.00024]]
+# [[7.9982038]]
+# [[8.00024]]
