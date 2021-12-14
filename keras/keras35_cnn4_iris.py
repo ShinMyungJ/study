@@ -72,6 +72,7 @@ end = time.time()- start
 
 print("걸린시간 : ", round(end, 3), '초')
 # model = load_model('./_ModelCheckPoint/iris_1206_2333_0050-0.0031.hdf5')
+
 #4. 평가, 예측
 loss = model.evaluate(x_test, y_test)
 print('loss: ', loss[0])
