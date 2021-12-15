@@ -1,20 +1,25 @@
 import pandas as pd
 import numpy as np
-from tensorflow.keras.datasets import mnist
+from tensorflow.keras.datasets import cifar100
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
 
+# 실습!!!
 
 #1. 데이터
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+(x_train, y_train),(x_test,y_test) = cifar100.load_data()
 
-print(x_train.shape, y_train.shape)         # (60000, 28, 28) (60000,)
-print(x_test.shape, y_test.shape)           # (10000, 28, 28) (10000,)
-
-# print(np.unique(y_train))                   # [0 1 2 3 4 5 6 7 8 9]
-      
+# print(x_train.shape)
+# print(y_train.shape)
+# print(np.unique(y_train,return_counts=True))
+'''
+(50000, 32, 32, 3)
+(50000, 1)
+(array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], dtype=uint8), array([5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000],
+      dtype=int64))
+'''
 from tensorflow.keras.utils import to_categorical
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
@@ -57,10 +62,10 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k42_8_', datetime, '_', filename])
-es = EarlyStopping(monitor='accuracy', patience=20, mode='auto', verbose=1, restore_best_weights=True)
+model_path = "".join([filepath, 'k42_11_', datetime, '_', filename])
+es = EarlyStopping(monitor='accuracy', patience=10, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="accuracy", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
-hist = model.fit(x_train, y_train, epochs=200, batch_size=256, validation_split=0.3, callbacks=[es, mcp])
+hist = model.fit(x_train, y_train, epochs=100, batch_size=32, validation_split=0.3, callbacks=[es, mcp])
 
 # model = load_model("")
 
@@ -72,9 +77,10 @@ print('loss : ', loss[0])
 print('accurcy : ', loss[1])
 
 # CNN
-# loss :  0.26760464906692505
-# accurcy :  0.9490000009536743
+# 
+
+# DNN
+# loss :  3.3526949882507324
+# accuracy :  0.2046000063419342
 
 # LSTM
-# loss :  1.445193886756897
-# accurcy :  0.44200000166893005

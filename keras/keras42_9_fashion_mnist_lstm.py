@@ -1,14 +1,15 @@
 import pandas as pd
 import numpy as np
-from tensorflow.keras.datasets import mnist
+from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
 
+# 실습!!!
 
 #1. 데이터
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
 print(x_train.shape, y_train.shape)         # (60000, 28, 28) (60000,)
 print(x_test.shape, y_test.shape)           # (10000, 28, 28) (10000,)
@@ -39,7 +40,7 @@ x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], 1)
 #2. 모델구성
 
 model = Sequential()
-model.add(LSTM(5, input_length=x_train.shape[1], input_dim=1))
+model.add(LSTM(10, input_length=x_train.shape[1], input_dim=1))
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(32, activation='relu'))
@@ -57,10 +58,10 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k42_8_', datetime, '_', filename])
-es = EarlyStopping(monitor='accuracy', patience=20, mode='auto', verbose=1, restore_best_weights=True)
+model_path = "".join([filepath, 'k42_9_', datetime, '_', filename])
+es = EarlyStopping(monitor='accuracy', patience=10, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="accuracy", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
-hist = model.fit(x_train, y_train, epochs=200, batch_size=256, validation_split=0.3, callbacks=[es, mcp])
+hist = model.fit(x_train, y_train, epochs=100, batch_size=256, validation_split=0.3, callbacks=[es, mcp])
 
 # model = load_model("")
 
@@ -71,10 +72,10 @@ result = model.predict(x_test)
 print('loss : ', loss[0])
 print('accurcy : ', loss[1])
 
-# CNN
-# loss :  0.26760464906692505
-# accurcy :  0.9490000009536743
+# DNN
+# loss :  0.4538135826587677
+# accurcy :  0.8411999940872192
 
 # LSTM
-# loss :  1.445193886756897
-# accurcy :  0.44200000166893005
+# loss :  1.0381516218185425
+# accurcy :  0.5985999703407288

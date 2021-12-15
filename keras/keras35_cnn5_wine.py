@@ -63,6 +63,9 @@ print('loss:', loss)
 y_predict = model.predict(x_test)
 
 from sklearn.metrics import r2_score
-print(y_test.shape, y_predict.shape)
+# print(y_test.shape, y_predict.shape)
 r2 = r2_score(y_test, y_predict)
 print('r2 스코어 : ', r2)
+
+# loss: 0.042142849415540695
+# r2 스코어 :  0.9224188478137122

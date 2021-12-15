@@ -69,6 +69,7 @@ start = time.time()
 hist = model.fit(x_train, y_train, epochs=100, batch_size = 1, validation_split = 0.3, callbacks = [es,mcp])
 end = time.time()- start
 
+#4. 평가, 예측
 
 print("걸린시간 : ", round(end, 3), '초')
 # model = load_model('./_ModelCheckPoint/iris_1206_2333_0050-0.0031.hdf5')
@@ -77,3 +78,6 @@ print("걸린시간 : ", round(end, 3), '초')
 loss = model.evaluate(x_test, y_test)
 print('loss: ', loss[0])
 print('accuracy : ', loss[1])
+
+# loss:  0.09043966978788376
+# accuracy :  0.9555555582046509

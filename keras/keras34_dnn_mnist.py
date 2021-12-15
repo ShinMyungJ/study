@@ -30,8 +30,8 @@ x_train_reshape = x_train.reshape(n,-1)
 x_train = scaler.fit_transform(x_train_reshape)
 m = x_test.shape[0]
 x_test = x_test.reshape(m,-1)
-x_test = scaler.transform(x_test.reshape(m,-1))
-
+# x_test = scaler.transform(x_test.reshape(m,-1))
+print(x_test)
 #2. 모델구성
 
 model = Sequential()
