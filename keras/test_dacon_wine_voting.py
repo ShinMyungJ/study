@@ -5,7 +5,6 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.ensemble import VotingClassifier
 import numpy as np
 import pandas as pd
-import time
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler, LabelEncoder, OneHotEncoder
 from pandas import get_dummies
 from sklearn.metrics import accuracy_score
@@ -64,6 +63,7 @@ scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 test_file = scaler.transform(test_file)
+
 
 #2 모델구성
 
