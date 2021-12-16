@@ -38,7 +38,6 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, shuffl
 # start = time.time()
 # hist = model.fit(x_train, y_train, epochs=100, batch_size=13, validation_split=0.2, callbacks=[es, mcp])
 # end = time.time() - start
-
 # print("=================================================")
 # print(hist.history['val_loss'])
 # print("=================================================")

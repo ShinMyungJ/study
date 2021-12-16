@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, Dropout
+from tensorflow.keras.layers import Dense, LSTM, Dropout, Conv1D, Flatten, Reshape, MaxPooling1D
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
 import time
 
@@ -45,7 +45,11 @@ x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], 1)
 #2. 모델구성
 
 model = Sequential()
-model.add(LSTM(5, input_length=x_train.shape[1], input_dim=1))
+model.add(Conv1D(5, 2, input_shape=(x_train.shape[1],1)))
+model.add(MaxPooling1D())
+model.add(Conv1D(5, 3))
+model.add(MaxPooling1D(3))
+model.add(Flatten())
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(32, activation='relu'))
@@ -63,7 +67,7 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k42_10_', datetime, '_', filename])
+model_path = "".join([filepath, 'k44_10_', datetime, '_', filename])
 es = EarlyStopping(monitor='accuracy', patience=10, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="accuracy", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
 
@@ -92,3 +96,9 @@ print('accurcy : ', loss[1])
 # LSTM
 # loss :  2.103163957595825
 # accurcy :  0.22519999742507935
+
+# Conv1D
+# 걸린시간 :  1069.582 초
+# 313/313 [==============================] - 1s 4ms/step - loss: 2.9915 - accuracy: 0.4596
+# loss :  2.9914512634277344
+# accurcy :  0.4596000015735626

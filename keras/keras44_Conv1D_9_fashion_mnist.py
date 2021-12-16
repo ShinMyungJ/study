@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, Dropout
+from tensorflow.keras.layers import Dense, LSTM, Dropout, Conv1D, Flatten, Reshape
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
 import time
 
@@ -10,17 +10,13 @@ import time
 
 #1. 데이터
 
-(x_train, y_train),(x_test,y_test) = cifar10.load_data()
+(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
-# print(x_train.shape)
-# print(y_train.shape)
-# print(np.unique(y_train,return_counts=True))
-'''
-(50000, 32, 32, 3)
-(50000, 1)
-(array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], dtype=uint8), array([5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000],
-      dtype=int64))
-'''
+print(x_train.shape, y_train.shape)         # (60000, 28, 28) (60000,)
+print(x_test.shape, y_test.shape)           # (10000, 28, 28) (10000,)
+
+# print(np.unique(y_train))                   # [0 1 2 3 4 5 6 7 8 9]
+      
 from tensorflow.keras.utils import to_categorical
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
@@ -45,7 +41,8 @@ x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], 1)
 #2. 모델구성
 
 model = Sequential()
-model.add(LSTM(5, input_length=x_train.shape[1], input_dim=1))
+model.add(Conv1D(10, 2, input_shape=(x_train.shape[1],1)))
+model.add(Flatten())
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(32, activation='relu'))
@@ -63,12 +60,14 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k42_10_', datetime, '_', filename])
+model_path = "".join([filepath, 'k44_9_', datetime, '_', filename])
 es = EarlyStopping(monitor='accuracy', patience=10, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="accuracy", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
 
 start = time.time()
-hist = model.fit(x_train, y_train, epochs=100, batch_size=256, validation_split=0.2, callbacks=[es, mcp])
+
+hist = model.fit(x_train, y_train, epochs=100, batch_size=256, validation_split=0.3, callbacks=[es, mcp])
+
 end = time.time() - start
 print("걸린시간 : ", round(end, 3), '초')
 
@@ -81,14 +80,16 @@ result = model.predict(x_test)
 print('loss : ', loss[0])
 print('accurcy : ', loss[1])
 
-# CNN
-# loss :  0.9427627921104431
-# accuracy :  0.6711000204086304
-
 # DNN
-# loss :  1.4445456266403198
-# accuracy :  0.49000000953674316
+# loss :  0.4538135826587677
+# accurcy :  0.8411999940872192
 
 # LSTM
-# loss :  2.103163957595825
-# accurcy :  0.22519999742507935
+# loss :  1.0381516218185425
+# accurcy :  0.5985999703407288
+
+# Conv1D
+# 걸린시간 :  230.614 초
+# 313/313 [==============================] - 0s 1ms/step - loss: 0.4578 - accuracy: 0.8595
+# loss :  0.45777568221092224
+# accurcy :  0.859499990940094

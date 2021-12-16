@@ -4,6 +4,7 @@ from tensorflow.keras.datasets import cifar100
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
+import time
 
 # 실습!!!
 
@@ -47,9 +48,9 @@ model = Sequential()
 model.add(LSTM(5, input_length=x_train.shape[1], input_dim=1))
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(16, activation='relu'))
-model.add(Dense(10, activation='softmax'))
+model.add(Dense(120, activation='relu'))
+model.add(Dense(60, activation='relu'))
+model.add(Dense(100, activation='softmax'))
 
 #3. 컴파일, 훈련
 
@@ -65,7 +66,11 @@ filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_l
 model_path = "".join([filepath, 'k42_11_', datetime, '_', filename])
 es = EarlyStopping(monitor='accuracy', patience=10, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="accuracy", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
-hist = model.fit(x_train, y_train, epochs=100, batch_size=32, validation_split=0.3, callbacks=[es, mcp])
+
+start = time.time()
+hist = model.fit(x_train, y_train, epochs=30, batch_size=256, validation_split=0.2, callbacks=[es, mcp])
+end = time.time() - start
+print("걸린시간 : ", round(end, 3), '초')
 
 # model = load_model("")
 
@@ -77,10 +82,13 @@ print('loss : ', loss[0])
 print('accurcy : ', loss[1])
 
 # CNN
-# 
+# loss :  2.829432725906372
+# accuracy :  0.310699999332428
 
 # DNN
 # loss :  3.3526949882507324
 # accuracy :  0.2046000063419342
 
 # LSTM
+# loss :  4.413427352905273
+# accurcy :  0.03240000084042549

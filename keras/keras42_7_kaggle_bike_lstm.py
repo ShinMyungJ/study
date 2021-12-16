@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
+import time
 
 def RMSE(y_test, y_pred):
     return np.sqrt(mean_squared_error(y_test, y_pred))
@@ -58,7 +59,11 @@ filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_l
 model_path = "".join([filepath, 'k42_7_', datetime, '_', filename])
 es = EarlyStopping(monitor='val_loss', patience=50, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
+
+start = time.time()
 hist = model.fit(x_train, y_train, epochs=500, batch_size=8, validation_split=0.3, callbacks=[es, mcp])
+end = time.time() - start
+print("걸린시간 : ", round(end, 3), '초')
 
 # model = load_model("")
 
@@ -74,24 +79,14 @@ print ('r2 :', r2)
 rmse = RMSE(y_test,y_pred)
 print('RMSE : ', rmse)
 
-print ('====================== 1. 기본출력 ========================')
-loss = model.evaluate(x_test, y_test)
-print('loss:', loss)
-
-y_predict = model.predict(x_test)
-
-r2 = r2_score(y_test, y_predict)
-print('r2 스코어:', r2)
-
-rmse = RMSE(y_test,y_pred)
-print('RMSE : ', rmse)
-
 # CNN
 # loss: 1.422896385192871
 # r2 스코어: 0.28490085907862783
 # RMSLE :  1.1928520594650784
 
 # LSTM
-# loss: 1.4208415746688843
-# r2 스코어: 0.30242391214475783
-# RMSLE :  1.191990571885143
+# 걸린시간 :  95.021 초
+# 103/103 [==============================] - 0s 860us/step - loss: 1.5420
+# loss :  1.5420335531234741
+# r2 : 0.24292355795220422
+# RMSE :  1.241786385384459

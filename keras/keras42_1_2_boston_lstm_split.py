@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
+import time
 
 #1. 데이터
 dataset = load_boston()
@@ -57,7 +58,14 @@ filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_l
 model_path = "".join([filepath, 'k42_1_', datetime, '_', filename])
 es = EarlyStopping(monitor='val_loss', patience=100, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
+
+start = time.time()
+
 hist = model.fit(x_train, y_train, epochs=500, batch_size=8, validation_split=0.3, callbacks=[es, mcp])
+
+end = time.time() - start
+print("걸린시간 : ", round(end, 3), '초')
+
 
 # model = load_model("")
 
@@ -81,5 +89,7 @@ print('r2 스코어 : ', r2)
 # r2 스코어 :  0.8363008608045814
 
 # LSTM Split
-# loss :  33.745582580566406
-# r2 스코어 :  0.6066655823256714
+# 걸린시간 :  32.776 초
+# 5/5 [==============================] - 0s 997us/step - loss: 43.5505
+# loss :  43.550537109375
+# r2 스코어 :  0.4999073175208518

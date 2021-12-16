@@ -6,6 +6,7 @@ from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout, Conv2D, Flatten ,MaxPooling2D
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
+import time
 
 def RMSE(y_test, y_pred):
     return np.sqrt(mean_squared_error(y_test, y_pred))
@@ -58,10 +59,14 @@ es = EarlyStopping(monitor='val_loss', patience=50, mode='auto',
                    verbose=1, restore_best_weights=False)
 mcp = ModelCheckpoint (monitor = 'val_loss', mode = 'min', verbose = 1, save_best_only=True,
                        filepath = './_ModelCheckPoint/keras27_7_MCP.hdf5')
+
+start = time.time()
 model.fit(x_train, y_train, epochs=1000, batch_size=32,
           validation_split=0.3, callbacks=[es,mcp])
+end = time.time() - start
+print("걸린시간 : ", round(end, 3), '초')
 
-model.save('./_save/keras27_7_save_model.h5')
+model.save('./_save/keras35_7_save_model.h5')
 
 #4. 평가, 예측
 loss = model.evaluate(x_test,y_test)
@@ -75,15 +80,8 @@ print ('r2 :', r2)
 rmse = RMSE(y_test,y_pred)
 print('RMSE : ', rmse)
 
-#4. 평가, 예측
-print ('====================== 1. 기본출력 ========================')
-loss = model.evaluate(x_test, y_test)
-print('loss:', loss)
-
-y_predict = model.predict(x_test)
-
-r2 = r2_score(y_test, y_predict)
-print('r2 스코어:', r2)
-
-rmse = RMSE(y_test,y_pred)
-print('RMSE : ', rmse)
+# 걸린시간 :  19.447 초
+# 103/103 [==============================] - 0s 350us/step - loss: 1.4453
+# loss :  1.445259690284729
+# r2 : 0.2736617154475226
+# RMSE :  1.2021894835429014

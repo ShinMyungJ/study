@@ -1,6 +1,6 @@
 from sklearn.datasets import load_diabetes
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM
+from tensorflow.keras.layers import Dense, LSTM, Conv1D, Flatten
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -35,7 +35,8 @@ x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], 1)
 
 #2. 모델구성
 model = Sequential()
-model.add(LSTM(50, input_length=x.shape[1], input_dim=1))
+model.add(Conv1D(50, 2, input_shape=(x.shape[1], 1)))
+model.add(Flatten())
 model.add(Dense(40, activation='relu'))
 model.add(Dense(35, activation='relu'))
 model.add(Dense(28, activation='relu'))
@@ -55,7 +56,7 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k42_2_', datetime, '_', filename])
+model_path = "".join([filepath, 'k44_2_', datetime, '_', filename])
 es = EarlyStopping(monitor='val_loss', patience=50, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
 
@@ -82,7 +83,11 @@ print('r2 스코어 : ', r2)
 # r2 스코어 :  0.22688962318817352
 
 # LSTM
-# 걸린시간 :  25.006 초
-# 5/5 [==============================] - 0s 997us/step - loss: 3712.3857
-# loss :  3712.3857421875
-# r2 스코어 :  0.40414682760888787
+# loss :  3734.9619140625
+# r2 스코어 :  0.4005232241418859
+
+# Conv1D
+# 걸린시간 :  5.192 초
+# 5/5 [==============================] - 0s 748us/step - loss: 3076.3682
+# loss :  3076.3681640625
+# r2 스코어 :  0.5062302834683403

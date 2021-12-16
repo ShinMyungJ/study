@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.datasets import cifar100
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, Dropout
+from tensorflow.keras.layers import Dense, LSTM, Dropout, Conv1D, Flatten, Reshape
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
 import time
 
@@ -10,7 +10,7 @@ import time
 
 #1. 데이터
 
-(x_train, y_train),(x_test,y_test) = cifar10.load_data()
+(x_train, y_train),(x_test,y_test) = cifar100.load_data()
 
 # print(x_train.shape)
 # print(y_train.shape)
@@ -45,12 +45,13 @@ x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], 1)
 #2. 모델구성
 
 model = Sequential()
-model.add(LSTM(5, input_length=x_train.shape[1], input_dim=1))
+model.add(Conv1D(5, 2, input_shape=(x_train.shape[1],1)))
+model.add(Flatten())
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(16, activation='relu'))
-model.add(Dense(10, activation='softmax'))
+model.add(Dense(50, activation='relu'))
+model.add(Dense(60, activation='relu'))
+model.add(Dense(100, activation='softmax'))
 
 #3. 컴파일, 훈련
 
@@ -63,12 +64,12 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k42_10_', datetime, '_', filename])
-es = EarlyStopping(monitor='accuracy', patience=10, mode='auto', verbose=1, restore_best_weights=True)
+model_path = "".join([filepath, 'k44_11_', datetime, '_', filename])
+es = EarlyStopping(monitor='accuracy', patience=5, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="accuracy", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
 
 start = time.time()
-hist = model.fit(x_train, y_train, epochs=100, batch_size=256, validation_split=0.2, callbacks=[es, mcp])
+hist = model.fit(x_train, y_train, epochs=30, batch_size=256, validation_split=0.2, callbacks=[es, mcp])
 end = time.time() - start
 print("걸린시간 : ", round(end, 3), '초')
 
@@ -82,13 +83,19 @@ print('loss : ', loss[0])
 print('accurcy : ', loss[1])
 
 # CNN
-# loss :  0.9427627921104431
-# accuracy :  0.6711000204086304
+# loss :  2.829432725906372
+# accuracy :  0.310699999332428
 
 # DNN
-# loss :  1.4445456266403198
-# accuracy :  0.49000000953674316
+# loss :  3.3526949882507324
+# accuracy :  0.2046000063419342
 
 # LSTM
-# loss :  2.103163957595825
-# accurcy :  0.22519999742507935
+# loss :  4.413427352905273
+# accurcy :  0.03240000084042549
+
+# Conv1D
+# 걸린시간 :  167.005 초
+# 313/313 [==============================] - 1s 3ms/step - loss: 3.3528 - accuracy: 0.2102
+# loss :  3.352849245071411
+# accurcy :  0.2101999968290329

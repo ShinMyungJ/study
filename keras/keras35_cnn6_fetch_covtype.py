@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
+import time
 
 #1. 데이터
 datasets = fetch_covtype()
@@ -90,7 +91,12 @@ filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_l
 model_path = "".join([filepath, 'k35_6_', datetime, '_', filename])
 es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
+
+start = time.time()
 hist = model.fit(x_train, y_train, epochs=100, batch_size=54, validation_split=0.2, callbacks=[es, mcp])
+end = time.time() - start
+
+print("걸린시간 : ", round(end, 3), '초')
 
 #4. 평가, 예측
 

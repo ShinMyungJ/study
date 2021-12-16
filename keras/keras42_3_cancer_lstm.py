@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
+import time
 
 #1. 데이터
 datasets = load_breast_cancer()
@@ -51,7 +52,11 @@ filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_l
 model_path = "".join([filepath, 'k42_3_', datetime, '_', filename])
 es = EarlyStopping(monitor='val_loss', patience=50, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
+
+start = time.time()
 hist = model.fit(x_train, y_train, epochs=500, batch_size=8, validation_split=0.3, callbacks=[es, mcp])
+end = time.time() - start
+print("걸린시간 : ", round(end, 3), '초')
 
 # model = load_model("")
 
@@ -70,5 +75,7 @@ print('r2 스코어 : ', r2)
 # accuracy :  1.0
 
 # LSTM
-# loss :  0.02655944414436817
-# r2 스코어 :  0.8842586179120276
+# 걸린시간 :  35.287 초
+# 6/6 [==============================] - 0s 3ms/step - loss: 0.0308
+# loss :  0.030805053189396858
+# r2 스코어 :  0.8657569906700799

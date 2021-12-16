@@ -54,8 +54,9 @@ x_test = scaler.transform(x_test.reshape(m,-1)).reshape(m,2,2,3)
 print(x_train.shape)
 
 model = Sequential()
-model.add(Conv2D(128, kernel_size=(4,4),padding ='same',strides=1, input_shape = (2,2,3)))#
+model.add(Conv2D(128, kernel_size=(2,2),padding ='same',strides=1, input_shape = (2,2,3)))#
 model.add(MaxPooling2D())
+model.summary()
 model.add(Conv2D(64,(2,2),padding ='same', activation='relu'))#<------------
 # model.add(MaxPooling2D())
 model.add(Dropout(0.2))
@@ -101,26 +102,25 @@ y_predict = model.predict(x_test)
 r2 = r2_score(y_test,y_predict)
 print("R2 : ",r2)
 print("epochs :",epoch)
-'''
-<<dnn>>
-<<ModelCheckpoint 우수>>
-Epoch 01423: val_loss did not improve from 6.13479
-4/4 [==============================] - 0s 0s/step - loss: 5.5674
-loss :  5.567386627197266
-R2 :  0.9333908703456402
-<<Drop OUT>>
-Epoch 00097: val_loss did not improve from 25.87711
-4/4 [==============================] - 0s 997us/step - loss: 18.0372
-loss :  18.037235260009766
-R2 :  0.7841995627355511
-<<CNN>>
-시간 :  44.89 초
-5/5 [==============================] - 0s 801us/step - loss: 9.4039
-loss :  9.403949737548828
-R2 :  0.8861742911169088
-Epoch 00909: val_loss did not improve from 10.08448
-시간 :  23.86 초
-5/5 [==============================] - 0s 748us/step - loss: 7.7454
-loss :  7.745367050170898
-R2 :  0.906249825286233
-'''
+
+# <<dnn>>
+# <<ModelCheckpoint 우수>>
+# Epoch 01423: val_loss did not improve from 6.13479
+# 4/4 [==============================] - 0s 0s/step - loss: 5.5674
+# loss :  5.567386627197266
+# R2 :  0.9333908703456402
+# <<Drop OUT>>
+# Epoch 00097: val_loss did not improve from 25.87711
+# 4/4 [==============================] - 0s 997us/step - loss: 18.0372
+# loss :  18.037235260009766
+# R2 :  0.7841995627355511
+# <<CNN>>
+# 시간 :  44.89 초
+# 5/5 [==============================] - 0s 801us/step - loss: 9.4039
+# loss :  9.403949737548828
+# R2 :  0.8861742911169088
+# Epoch 00909: val_loss did not improve from 10.08448
+# 시간 :  23.86 초
+# 5/5 [==============================] - 0s 748us/step - loss: 7.7454
+# loss :  7.745367050170898
+# R2 :  0.906249825286233

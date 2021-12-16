@@ -4,6 +4,7 @@ from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
+import time
 
 # 실습!!!
 
@@ -62,6 +63,10 @@ model_path = "".join([filepath, 'k42_9_', datetime, '_', filename])
 es = EarlyStopping(monitor='accuracy', patience=10, mode='auto', verbose=1, restore_best_weights=True)
 mcp = ModelCheckpoint(monitor="accuracy", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
 hist = model.fit(x_train, y_train, epochs=100, batch_size=256, validation_split=0.3, callbacks=[es, mcp])
+
+start = time.time()
+end = time.time() - start
+print("걸린시간 : ", round(end, 3), '초')
 
 # model = load_model("")
 
