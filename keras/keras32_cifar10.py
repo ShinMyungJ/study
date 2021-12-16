@@ -38,54 +38,53 @@ x_test = scaler.transform(x_test.reshape(m,-1)).reshape(x_test.shape)
 #2. 모델 구성
 
 model = Sequential()
-model.add(Conv2D(20, kernel_size=(2,2), padding ='causal',strides=1, input_shape = (32,32,3)))
+model.add(Conv2D(20, kernel_size=(2,2), padding ='same',strides=1, input_shape = (32,32,3)))
 model.add(MaxPool2D(2))
 model.summary()
+model.add(Conv2D(15,(2,2), padding ='same', activation='relu'))
+model.add(Dropout(0.3))
+model.add(Conv2D(7,(2,2), padding ='same', activation='relu'))
+model.add(MaxPool2D(2))
+model.add(Flatten())
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.2))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(16, activation='relu'))
+model.add(Dense(10, activation='softmax'))
 
-# model.add(Conv2D(15,(2,2), padding ='same', activation='relu'))
-# model.add(Dropout(0.3))
-# model.add(Conv2D(7,(2,2), padding ='same', activation='relu'))
-# model.add(MaxPool2D(2))
-# model.add(Flatten())
-# model.add(Dense(64, activation='relu'))
-# model.add(Dropout(0.2))
-# model.add(Dense(32, activation='relu'))
-# model.add(Dense(16, activation='relu'))
-# model.add(Dense(10, activation='softmax'))
+#model.summary() #3,153
 
-# #model.summary() #3,153
+#3. 컴파일, 훈련
 
-# #3. 컴파일, 훈련
+model.compile(loss = 'categorical_crossentropy', optimizer = "adam", metrics=['accuracy']) # metrics=['accuracy'] 영향을 미치지 않는다
 
-# model.compile(loss = 'categorical_crossentropy', optimizer = "adam", metrics=['accuracy']) # metrics=['accuracy'] 영향을 미치지 않는다
+start = time.time()
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
-# start = time.time()
-# from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+############################################################################
+import datetime
+date = datetime.datetime.now()
+datetime = date.strftime("%m%d_%H%M")   # 월일_시분
+# print(datetime)
 
-# ############################################################################
-# import datetime
-# date = datetime.datetime.now()
-# datetime = date.strftime("%m%d_%H%M")   # 월일_시분
-# # print(datetime)
+filepath = './_ModelCheckPoint/'
+filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 2500(에포수)-0.3724(val_loss).hdf5
+model_path = "".join([filepath, 'k32_cifar10_', datetime, '_', filename])
+                   # ./_ModelCheckPoint/k32_cifar10_1206_1656_2500-0.3724.hdf5
+#############################################################################
 
-# filepath = './_ModelCheckPoint/'
-# filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 2500(에포수)-0.3724(val_loss).hdf5
-# model_path = "".join([filepath, 'k32_cifar10_', datetime, '_', filename])
-#                    # ./_ModelCheckPoint/k32_cifar10_1206_1656_2500-0.3724.hdf5
-# #############################################################################
-
-# es = EarlyStopping(monitor='val_loss', patience=10, mode = 'auto', restore_best_weights=True)
-# mcp = ModelCheckpoint(monitor='val_loss', mode = 'auto', verbose=1, save_best_only= True, filepath = model_path)
-# hist = model.fit(x_train, y_train, epochs = 32, validation_split=0.2, callbacks=[es,mcp], batch_size = 50)
-# end = time.time() - start
-# print('시간 : ', round(end,2) ,'초')
+es = EarlyStopping(monitor='val_loss', patience=10, mode = 'auto', restore_best_weights=True)
+mcp = ModelCheckpoint(monitor='val_loss', mode = 'auto', verbose=1, save_best_only= True, filepath = model_path)
+hist = model.fit(x_train, y_train, epochs = 32, validation_split=0.2, callbacks=[es,mcp], batch_size = 50)
+end = time.time() - start
+print('시간 : ', round(end,2) ,'초')
 
 
-# #4 평가, 예측
-# loss = model.evaluate(x_test,y_test)
-# y_predict = model.predict(x_test)
-# print("loss : ",loss[0])
-# print("accuracy : ",loss[1])
+#4 평가, 예측
+loss = model.evaluate(x_test,y_test)
+y_predict = model.predict(x_test)
+print("loss : ",loss[0])
+print("accuracy : ",loss[1])
 
-# # loss :  0.9427627921104431
-# # accuracy :  0.6711000204086304
+# loss :  0.9427627921104431
+# accuracy :  0.6711000204086304

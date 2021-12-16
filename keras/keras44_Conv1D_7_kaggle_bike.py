@@ -1,3 +1,4 @@
+from math import expm1
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout, Conv1D, Flatten, Reshape
 from sklearn.metrics import r2_score, mean_squared_error
@@ -62,7 +63,7 @@ es = EarlyStopping(monitor='val_loss', patience=50, mode='auto', verbose=1, rest
 mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
 
 start = time.time()
-hist = model.fit(x_train, y_train, epochs=500, batch_size=8, validation_split=0.3, callbacks=[es, mcp])
+hist = model.fit(x_train, y_train, epochs=10, batch_size=8, validation_split=0.3, callbacks=[es, mcp])
 end = time.time() - start
 print("걸린시간 : ", round(end, 3), '초')
 
@@ -74,11 +75,14 @@ print("loss : ",loss)
 
 y_pred = model.predict(x_test)
 
-r2 = r2_score(y_test, y_pred)
-print ('r2 :', r2)
+y_pred = np.expm1(y_pred)
+print(y_pred)
 
-rmse = RMSE(y_test,y_pred)
-print('RMSE : ', rmse)
+# r2 = r2_score(y_test, y_pred)
+# print ('r2 :', r2)
+
+# rmse = RMSE(y_test,y_pred)
+# print('RMSE : ', rmse)
 
 # CNN
 # loss: 1.422896385192871

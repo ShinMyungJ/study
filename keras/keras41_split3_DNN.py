@@ -37,13 +37,13 @@ x_pred = pred[:, :4]
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.7, shuffle = True, random_state = 66) 
 
 # # scaler = MinMaxScaler()
-# scaler = StandardScaler()
+scaler = StandardScaler()
 # # scaler = RobustScaler()
 # # scaler = MaxAbsScaler()
 
-# scaler.fit(x_train)
-# x_train = scaler.transform(x_train)
-# x_test = scaler.transform(x_test)
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
 
 print(x_train.shape, x_test.shape)
 
