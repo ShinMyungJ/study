@@ -75,14 +75,14 @@ print("loss : ",loss)
 
 y_pred = model.predict(x_test)
 
+r2 = r2_score(y_test, y_pred)
+print ('r2 :', r2)
+
+rmse = RMSE(y_test,y_pred)
+print('RMSE : ', rmse)
+
 y_pred = np.expm1(y_pred)
-print(y_pred)
-
-# r2 = r2_score(y_test, y_pred)
-# print ('r2 :', r2)
-
-# rmse = RMSE(y_test,y_pred)
-# print('RMSE : ', rmse)
+print(y_pred[:5])
 
 # CNN
 # loss: 1.422896385192871
