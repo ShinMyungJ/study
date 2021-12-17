@@ -60,4 +60,4 @@ y_predict = model.predict([x1_test,x2_test])
 from sklearn.metrics import r2_score
 r2 = r2_score(y_test, y_predict)
 print('r2 스코어 : ', r2)
-print(y_predict)
+# print(y_predict)
