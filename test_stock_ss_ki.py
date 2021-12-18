@@ -95,7 +95,7 @@ print('예측값 : ', y_predict[-1])
 
 # print(x_ss.shape, x_ki.shape, y_ss.shape, y_ki.shape)
 
-# from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
 
 # x1_train, x1_test, x2_train, x2_test, y1_train, y1_test, y2_train, y2_test = train_test_split(
 #     x1, x2, y1, y2, train_size=0.7, shuffle=True, random_state=66)
