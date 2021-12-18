@@ -6,7 +6,7 @@ x1 = np.transpose(x1)
 # x2 = np.transpose(x2)
 
 y1 = np.array(range(1001, 1101))
-y2 = np.array(range(101,201))
+y2 = np.array(range(101, 201))
 y3 = np.array(range(401, 501))
 
 print(x1.shape, y1.shape, y2.shape, y3.shape)
