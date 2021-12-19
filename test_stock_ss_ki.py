@@ -8,7 +8,7 @@
 
 import pandas as pd
 import numpy as np
-from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.models import Sequential, Model, load_model
 from tensorflow.keras.layers import Dense, LSTM, Dropout, Conv1D, Flatten, Input
 from sklearn.model_selection import train_test_split
 
@@ -81,70 +81,76 @@ print(x2_train.shape, x2_test.shape)  #(10, 5, 4) (5, 5, 4)
 print(y1_train.shape, y1_test.shape)  #(10, 1) (5, 1)
 print(y2_train.shape, y2_test.shape)  #(10, 1) (5, 1)
 
-#2-1 모델1
-input1 = Input((5,3))
-dense1 = LSTM(10, activation='relu', name = 'dense1')(input1)
-dense2 = Dense(15, activation='relu', name = 'dense2')(dense1)
-dense3 = Dense(7, activation='relu', name = 'dense3')(dense2)
-output1 = Dense(7, activation='relu', name = 'output1')(dense3)
+# #2-1 모델1
+# input1 = Input((5,3))
+# dense1 = LSTM(10, activation='relu', name = 'dense1')(input1)
+# dense2 = Dense(15, activation='relu', name = 'dense2')(dense1)
+# dense3 = Dense(7, activation='relu', name = 'dense3')(dense2)
+# output1 = Dense(7, activation='relu', name = 'output1')(dense3)
 
-#2-2 모델2
-input2 = Input((5,3))
-dense11 = LSTM(10, activation='relu', name = 'dense11')(input2)
-dense12 = Dense(30, activation='relu', name = 'dense12')(dense11)
-dense13 = Dense(25, activation='relu', name = 'dense13')(dense12)
-dense14 = Dense(10, activation='relu', name = 'dense14')(dense13)
-output2 = Dense(5, activation='relu', name = 'output2')(dense14)
+# #2-2 모델2
+# input2 = Input((5,3))
+# dense11 = LSTM(10, activation='relu', name = 'dense11')(input2)
+# dense12 = Dense(30, activation='relu', name = 'dense12')(dense11)
+# dense13 = Dense(25, activation='relu', name = 'dense13')(dense12)
+# dense14 = Dense(10, activation='relu', name = 'dense14')(dense13)
+# output2 = Dense(5, activation='relu', name = 'output2')(dense14)
 
-from tensorflow.keras.layers import concatenate, Concatenate
-# merge1 = concatenate([output1, output2])            # (None, 12)
-# print(merge1.shape)
-merge1 = Concatenate()([output1, output2])            # (None, 12)
-# print(merge1.shape)
+# from tensorflow.keras.layers import concatenate, Concatenate
+# # merge1 = concatenate([output1, output2])            # (None, 12)
+# # print(merge1.shape)
+# merge1 = Concatenate()([output1, output2])            # (None, 12)
+# # print(merge1.shape)
 
-#2-3 output 모델1
-output21 = Dense(7)(merge1)
-output22 = Dense(11)(output21)
-output23 = Dense(11, activation='relu')(output22)
-last_output1 = Dense(1)(output23)
+# #2-3 output 모델1
+# output21 = Dense(7)(merge1)
+# output22 = Dense(11)(output21)
+# output23 = Dense(11, activation='relu')(output22)
+# last_output1 = Dense(1)(output23)
 
-#2-4 output 모델2
-output31 = Dense(7)(merge1)
-output32 = Dense(11)(output31)
-output33 = Dense(21)(output32)
-output34 = Dense(11, activation='relu')(output33)
-last_output2 = Dense(1)(output34)
+# #2-4 output 모델2
+# output31 = Dense(7)(merge1)
+# output32 = Dense(11)(output31)
+# output33 = Dense(21)(output32)
+# output34 = Dense(11, activation='relu')(output33)
+# last_output2 = Dense(1)(output34)
 
-model = Model(inputs=[input1, input2], outputs=[last_output1,last_output2])
+# model = Model(inputs=[input1, input2], outputs=[last_output1,last_output2])
 
-model.summary()
+# model.summary()
 
-#3. 컴파일, 훈련
-model.compile(loss='mse', optimizer='adam', metrics='mae')
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-import datetime
-import time
-date = datetime.datetime.now()
-datetime = date.strftime("%m%d_%H%M")   # 월일_시분
-# print(datetime)
+# #3. 컴파일, 훈련
+# model.compile(loss='mse', optimizer='adam', metrics='mae')
+# from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+# import datetime
+# import time
+# date = datetime.datetime.now()
+# datetime = date.strftime("%m%d_%H%M")   # 월일_시분
+# # print(datetime)
 
-filepath = './_ModelCheckPoint/'
-filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'test_stock_', datetime, '_', filename])
-es = EarlyStopping(monitor='val_loss', patience=20, mode='auto', verbose=1, restore_best_weights=True)
-mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
+# filepath = './_ModelCheckPoint/'
+# filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
+# model_path = "".join([filepath, 'test_stock_', datetime, '_', filename])
+# es = EarlyStopping(monitor='val_loss', patience=20, mode='auto', verbose=1, restore_best_weights=True)
+# mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
 
-start = time.time()
-hist = model.fit([x1_train, x2_train], [y1_train, y2_train], epochs=100, batch_size=1, validation_split=0.3, callbacks=[es, mcp])
-end = time.time() - start
-print("걸린시간 : ", round(end, 3), '초')
+# start = time.time()
+# hist = model.fit([x1_train, x2_train], [y1_train, y2_train], epochs=100, batch_size=1, validation_split=0.3, callbacks=[es, mcp])
+# end = time.time() - start
+# print("걸린시간 : ", round(end, 3), '초')
+
+# model.save("./_save/test_stock1_save_model.h5")
+# model = load_model('./_ModelCheckPoint/test_stock_1219_2118_0037-21398376.0000.hdf5')
+model = load_model('./_save/test_stock1_save_model.h5')
 
 
 #4. 평가, 예측
 loss = model.evaluate ([x1_test, x2_test], [y1_test,y2_test], batch_size=1)
-print('loss :', loss) #loss :
+print('loss :', loss)
 result1, result2 = model.predict([x1, x2])
 print('삼성전자 12/20 종가 : ', result1[-1],'원')
 print('키움증권 12/20 종가 : ', result2[-1],'원')
 # print(y1_pred)
 # print(y2_pred)
+# 삼성전자 12/20 종가 :  [79877.44] 원
+# 키움증권 12/20 종가 :  [111196.22] 원
