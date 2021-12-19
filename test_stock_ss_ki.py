@@ -17,7 +17,7 @@ from sklearn.model_selection import train_test_split
 
 path = "./_data/stock/"
 ss = pd.read_csv(path +"삼성전자.csv", thousands=',', encoding='cp949')
-ss = ss.drop(range(20, 1120), axis=0)                                  # 물적분할 (893, 1120)
+ss = ss.drop(range(20, 1120), axis=0)                                  # 액면분할 (893, 1120)
 ki = pd.read_csv(path + "키움증권.csv", thousands=',', encoding='cp949')
 ki = ki.drop(range(20, 1060), axis=0)
 # ki = ki.drop(range(893, 1120), axis=0)
@@ -152,4 +152,5 @@ print('삼성전자 12/20 종가 : ', result1[-1],'원')
 print('키움증권 12/20 종가 : ', result2[-1],'원')
 # print(y1_pred)
 # print(y2_pred)
-
+# 삼성전자 12/20 종가 :  [79877.44] 원
+# 키움증권 12/20 종가 :  [111196.22] 원
