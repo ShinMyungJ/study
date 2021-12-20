@@ -88,33 +88,33 @@ print(pred1[-1])
 x1_train, x1_test, x2_train, x2_test, y1_train, y1_test, y2_train, y2_test = train_test_split(
     x1, x2, y1, y2, train_size=0.7, shuffle=True, random_state=66)
 
-x1_train  = x1_train.reshape(x1_train.shape[0],x1_train.shape[1]*x1_train.shape[2])
-x1_test_x  = x1_test.reshape(x1_test.shape[0],x1_test.shape[1]*x1_test.shape[2])
-x2_train = x2_train.reshape(x2_train.shape[0],x2_train.shape[1]*x2_train.shape[2])
-x2_test  = x2_test.reshape(x2_test.shape[0],x2_test.shape[1]*x2_test.shape[2])
-pred1  = pred1.reshape(pred1.shape[0],pred1.shape[1]*pred1.shape[2])
-pred2  = pred2.reshape(pred2.shape[0],pred2.shape[1]*pred2.shape[2])
+# x1_train  = x1_train.reshape(x1_train.shape[0],x1_train.shape[1]*x1_train.shape[2])
+# x1_test_x  = x1_test.reshape(x1_test.shape[0],x1_test.shape[1]*x1_test.shape[2])
+# x2_train = x2_train.reshape(x2_train.shape[0],x2_train.shape[1]*x2_train.shape[2])
+# x2_test  = x2_test.reshape(x2_test.shape[0],x2_test.shape[1]*x2_test.shape[2])
+# pred1  = pred1.reshape(pred1.shape[0],pred1.shape[1]*pred1.shape[2])
+# pred2  = pred2.reshape(pred2.shape[0],pred2.shape[1]*pred2.shape[2])
 
 
-scaler = StandardScaler()
-# scaler = MinMaxScaler()
-# scaler = RobustScaler()
-# scaler = MaxAbsScaler()
-x1_train = scaler.fit_transform(x1_train)
-x1_test = scaler.transform(x2_test)
-x2_train = scaler.fit_transform(x2_train)
-x2_test_x = scaler.transform(x2_test)
-pred1 = scaler.fit_transform(pred1)
-pred2 = scaler.transform(pred2)
+# scaler = StandardScaler()
+# # scaler = MinMaxScaler()
+# # scaler = RobustScaler()
+# # scaler = MaxAbsScaler()
+# x1_train = scaler.fit_transform(x1_train)
+# x1_test = scaler.transform(x2_test)
+# x2_train = scaler.fit_transform(x2_train)
+# x2_test_x = scaler.transform(x2_test)
+# pred1 = scaler.fit_transform(pred1)
+# pred2 = scaler.transform(pred2)
 
-x1_train  = x1_train.reshape(x1_train.shape[0],5,6)
-x1_test  = x1_test.reshape(x1_test_x.shape[0],5,6)
+# x1_train  = x1_train.reshape(x1_train.shape[0],5,6)
+# x1_test  = x1_test.reshape(x1_test_x.shape[0],5,6)
 
-x2_train  = x2_train.reshape(x2_train.shape[0],5,6)
-x2_test  = x2_test.reshape(x2_test.shape[0],5,6)
+# x2_train  = x2_train.reshape(x2_train.shape[0],5,6)
+# x2_test  = x2_test.reshape(x2_test.shape[0],5,6)
 
-pred1  = pred1.reshape(pred1.shape[0],5,6)
-pred2  = pred2.reshape(pred2.shape[0],5,6)
+# pred1  = pred1.reshape(pred1.shape[0],5,6)
+# pred2  = pred2.reshape(pred2.shape[0],5,6)
 
 #2-1 모델1
 input1 = Input((5,6))
@@ -153,7 +153,7 @@ last_output2 = Dense(3)(output34)
 model = Model(inputs=[input1, input2], outputs=[last_output1,last_output2])
 
 model.summary()
-
+'''
 #3. 컴파일, 훈련
 model.compile(loss='mae', optimizer='adam')
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -173,8 +173,8 @@ start = time.time()
 hist = model.fit([x1_train, x2_train], [y1_train, y2_train], epochs=500, batch_size=1, validation_split=0.3, callbacks=[es])
 end = time.time() - start
 print("걸린시간 : ", round(end, 3), '초')
-
-# model = load_model('./_save/exam/12823892.0_45555.53515625.h5')
+'''
+model = load_model('./_save/exam/12823892.0_45555.53515625.h5')
 
 #4. 평가, 예측
 loss = model.evaluate ([x1_test, x2_test], [y1_test,y2_test], batch_size=1)
