@@ -39,7 +39,7 @@ ki = ki.loc[::-1].reset_index(drop=True)
                       # Index(['일자', '시가', '고가', '저가', '종가', '전일비', 'Unnamed: 6', '등락률', '거래량',
                       #'금액(백만)', '신용비', '개인', '기관', '외인(수량)', '외국계', '프로그램', '외인비'], dtype='object')
 # print(ss.info())
-# print(ss.isnull().sum())    #(거래량 3, 금액(백만) 3)
+# print(ss.isnull().sum())    #(거래량 3, 금액(백만)  3)
 # print(ki.isnull().sum())  
 
 x_ss = ss.drop(['일자', '전일비', 'Unnamed: 6', '등락률', '거래량', '금액(백만)', '신용비', '개인', '기관', '외인(수량)', '외국계', '프로그램', '외인비'], axis =1)
