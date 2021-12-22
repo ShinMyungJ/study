@@ -150,7 +150,7 @@ output34 = Dense(8, activation='relu')(output33)
 last_output2 = Dense(4)(output34)
 
 model = Model(inputs=[input1, input2], outputs=[last_output1,last_output2])
-'''
+
 model.summary()
 
 #3. 컴파일, 훈련
@@ -172,8 +172,8 @@ start = time.time()
 hist = model.fit([x1_train, x2_train], [y1_train, y2_train], epochs=500, batch_size=4, validation_split=0.3, callbacks=[es])
 end = time.time() - start
 print("걸린시간 : ", round(end, 3), '초')
-'''
-model = load_model('./_save/exam/3_78636_108945.h5')
+
+# model = load_model('./_save/exam/3_78636_108945.h5')
 
 #4. 평가, 예측
 loss = model.evaluate ([x1_test, x2_test], [y1_test,y2_test], batch_size=1)
@@ -187,7 +187,6 @@ result1, result2 = model.predict([pred1, pred2])
 
 ssp = result1[-1][-1]
 kip = result2[-1][-1]
-
 # model.save("./_save/exam/3_{0:.0f}_{1:.0f}.h5".format(ssp,kip))
 
 print('삼성전자 12/22 시가 : ', f'{ssp:.0f}','원')
