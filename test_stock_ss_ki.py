@@ -97,9 +97,9 @@ print(y2_train.shape, y2_test.shape)  #(10, 1) (5, 1)
 # output2 = Dense(5, activation='relu', name = 'output2')(dense14)
 
 # from tensorflow.keras.layers import concatenate, Concatenate
-# # merge1 = concatenate([output1, output2])            # (None, 12)
+# # merge1 = concatenate([output1, output2])             # (None, 12)
 # # print(merge1.shape)
-# merge1 = Concatenate()([output1, output2])            # (None, 12)
+# merge1 = Concatenate()([output1, output2])             # (None, 12)
 # # print(merge1.shape)
 
 # #2-3 output 모델1
