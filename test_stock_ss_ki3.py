@@ -131,9 +131,9 @@ dense14 = Dense(16, activation='relu', name = 'dense14')(dense13)
 output2 = Dense(8, name = 'output2')(dense14)
 
 from tensorflow.keras.layers import concatenate, Concatenate
-# merge1 = concatenate([output1, output2])            # (None, 12)
+merge1 = concatenate([output1, output2])            # (None, 12)
 # print(merge1.shape)
-merge1 = Concatenate()([output1, output2])            # (None, 12)
+# merge1 = Concatenate()([output1, output2])            # (None, 12)
 # print(merge1.shape)
 
 #2-3 output 모델1
