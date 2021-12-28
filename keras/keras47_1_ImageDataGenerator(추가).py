@@ -23,7 +23,9 @@ xy_train = train_datagen.flow_from_directory(
     target_size=(150, 150),                         # size는 원하는 사이즈로 조정해 줌. 단, 너무 크기 차이가 나면 안좋을 수 있음
     batch_size=5,
     class_mode='binary',
-    shuffle=True
+    shuffle=True, seed=66,
+    color_mode='grayscale',
+    save_to_dir='../_temp/'                         # 변조된 건드린 데이터가 저장됨
 )       # Found 160 images belonging to 2 classes.
 
 xy_test = test_datagen.flow_from_directory(
@@ -40,13 +42,13 @@ print(xy_train)
 # dataset = load_boston()
 # print(dataset)
 
-# print(xy_train[31])       # 마지막 batch
-# print(xy_train[0][0])
-# print(xy_train[0][1])
+print(xy_train[31])       # 마지막 batch
+print(xy_train[0][0])
+print(xy_train[0][1])
 # print(xy_train[0][2])             # error
 print(xy_train[0][0].shape, xy_train[0][1].shape)         # (5, 150, 150, 3), (5,)   # 흑백은 알아서 찾아라
 
-print(type(xy_train))       # <class 'tensorflow.python.keras.preprocessing.image.DirectoryIterator'>
-print(type(xy_train[0]))    # <class 'tuple'>
-print(type(xy_train[0][0])) # <class 'numpy.ndarray'>
-print(type(xy_train[0][1])) # <class 'numpy.ndarray'>
+# print(type(xy_train))       # <class 'tensorflow.python.keras.preprocessing.image.DirectoryIterator'>
+# print(type(xy_train[0]))    # <class 'tuple'>
+# print(type(xy_train[0][0])) # <class 'numpy.ndarray'>
+# print(type(xy_train[0][1])) # <class 'numpy.ndarray'>

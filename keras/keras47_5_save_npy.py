@@ -1,5 +1,8 @@
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import time
+
+from tensorflow.python.keras.layers.core import Dropout
 
 train_datagen = ImageDataGenerator(
     rescale=1./255,
@@ -21,7 +24,7 @@ test_datagen = ImageDataGenerator(
 xy_train = train_datagen.flow_from_directory(
     '../_data/image/brain/train',
     target_size=(150, 150),                         # size는 원하는 사이즈로 조정해 줌. 단, 너무 크기 차이가 나면 안좋을 수 있음
-    batch_size=5,
+    batch_size=200,
     class_mode='binary',
     shuffle=True
 )       # Found 160 images belonging to 2 classes.
@@ -29,24 +32,17 @@ xy_train = train_datagen.flow_from_directory(
 xy_test = test_datagen.flow_from_directory(
     '../_data/image/brain/test',
     target_size=(150,150),
-    batch_size=5,
+    batch_size=200,
     class_mode='binary'    
 )       # Found 120 images belonging to 2 classes.
 
 print(xy_train)
 # <tensorflow.python.keras.preprocessing.image.DirectoryIterator object at 0x000001B7BC3D4F70>
 
-# from sklearn.datasets import load_boston
-# dataset = load_boston()
-# print(dataset)
+print(xy_train[0][0].shape, xy_train[0][1].shape)       # (160, 150, 150, 3) (160,)
+print(xy_test[0][0].shape, xy_test[0][1].shape)         # (120, 150, 150, 3) (120,)
 
-# print(xy_train[31])       # 마지막 batch
-# print(xy_train[0][0])
-# print(xy_train[0][1])
-# print(xy_train[0][2])             # error
-print(xy_train[0][0].shape, xy_train[0][1].shape)         # (5, 150, 150, 3), (5,)   # 흑백은 알아서 찾아라
-
-print(type(xy_train))       # <class 'tensorflow.python.keras.preprocessing.image.DirectoryIterator'>
-print(type(xy_train[0]))    # <class 'tuple'>
-print(type(xy_train[0][0])) # <class 'numpy.ndarray'>
-print(type(xy_train[0][1])) # <class 'numpy.ndarray'>
+np.save('./_save_npy/keras47_4_train_x.npy', arr=xy_train[0][0])
+np.save('./_save_npy/keras47_4_train_y.npy', arr=xy_train[0][1])
+np.save('./_save_npy/keras47_4_test_x.npy', arr=xy_test[0][0])
+np.save('./_save_npy/keras47_4_test_y.npy', arr=xy_test[0][1])
