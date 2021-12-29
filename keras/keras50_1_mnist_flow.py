@@ -38,12 +38,11 @@ y_augmented = y_train[randidx].copy()
 # print(x_augmented.shape)   # (40000, 28, 28)
 # print(y_augmented.shape)   # (40000,)
 
-x_train = x_train.reshape(60000, 28, 28,1)
-x_test = x_test.reshape(x_test.shape[0],28,28,1)
-
 minmax_scaler = MinMaxScaler()
-x_augmented = x_augmented.reshape(augment_size, x_train.shape[1]*x_train.shape[2])
-x_augmented = minmax_scaler.fit_transform(x_augmented).reshape(x_augmented.shape[0],x_train.shape[1],x_train.shape[2],1)
+x_train_scale = x_train.reshape(x_train.shape[0], x_train.shape[1]*x_train.shape[2])
+x_train = minmax_scaler.fit_transform(x_train_scale).reshape(x_train.shape[0],x_train.shape[1],x_train.shape[2],1)
+
+x_test = x_test.reshape(x_test.shape[0],28,28,1)
 
 x_augmented = x_augmented.reshape(x_augmented.shape[0], 
                                   x_augmented.shape[1],
@@ -56,10 +55,6 @@ x_augmented = train_datagen.flow(x_augmented,
                                 #  save_to_dir = '../_temp/'
                                  ).next()[0]
 
-minmax_scaler = MinMaxScaler()
-x_augmented = x_augmented.reshape(augment_size, x_train.shape[1]*x_train.shape[2])
-x_augmented = minmax_scaler.fit_transform(x_augmented).reshape(x_augmented.shape[0],x_train.shape[1],x_train.shape[2],1)
-
 x_test = test_datagen.flow(x_test, y_test,
                            batch_size=augment_size,
                            shuffle=False,
@@ -67,15 +62,10 @@ x_test = test_datagen.flow(x_test, y_test,
 
 x_train = np.concatenate((x_train, x_augmented))        # concatenate 괄호 두 개인 이유
 y_train = np.concatenate((y_train, y_augmented))
-print(x_train.shape, y_train.shape)                     # (100000, 28, 28, 1) (100000,)
-print(x_test.shape, y_test.shape)                       # (10000, 28, 28, 1) (10000,)
-print(x_train[20000])
-print("-------------------------------------------------------")
-# print(x_test[0])
+# print(x_train.shape, y_train.shape)                     # (100000, 28, 28, 1) (100000,)
+# print(x_test.shape, y_test.shape)                       # (10000, 28, 28, 1) (10000,)
 
 
-
-'''
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, Dense, Flatten
 from tensorflow.keras.utils import to_categorical
@@ -119,6 +109,8 @@ print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
 # y_predict = model.predict(x_test)
 # print(predict[0])
 
-# loss: 0.38
-# acc: 86.72%
-'''
+# 걸린시간 :  132.417 초
+# ====================== 1. 기본출력 ========================
+# 313/313 [==============================] - 1s 3ms/step - loss: 0.5235 - acc: 0.8187
+# loss: 0.52
+# acc: 81.87%
