@@ -15,8 +15,8 @@ train_datagen = ImageDataGenerator(
     width_shift_range=0.1,
     height_shift_range=0.1,
     rotation_range=5,
-    zoom_range=1.2,
-    shear_range=0.7,
+    zoom_range=0.2,
+    # shear_range=0.7,
     fill_mode='nearest',
     validation_split=0.3
 )
@@ -133,7 +133,7 @@ from tensorflow.keras.preprocessing import image
 # 샘플 케이스 경로지정
 #Found 1 images belonging to 1 classes.
 sample_directory = '../_data/image/MJ/'
-sample_image = sample_directory + "ccc1.jpg"
+sample_image = sample_directory + "ccc2.jpg"
 
 # # 샘플 케이스 확인
 # image_ = plt.imread(str(sample_image))

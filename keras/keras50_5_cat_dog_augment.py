@@ -1,19 +1,22 @@
-# kaggle.com/c/dogs-vs-cats/data
+# 훈련데이터 10만개로 증폭
+# 완료후 기존 모델과 비교
+# save_dir도 _temp에 넣고
+# 증폭데이터는 temp에 저장 후 훈련 끝난 후 결과 보고 삭제
 
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import time
-import math
+
 from tensorflow.python.keras.layers.core import Dropout
 
 train_datagen = ImageDataGenerator(
     rescale=1./255,
     horizontal_flip=True,
-    vertical_flip=True,
+    # vertical_flip=True,
     width_shift_range=0.1,
     height_shift_range=0.1,
     rotation_range=5,
-    zoom_range=0.2,
+    zoom_range=0.1,
     # shear_range=0.7,
     fill_mode='nearest'
 )
@@ -39,35 +42,44 @@ xy_test = test_datagen.flow_from_directory(
     class_mode='binary'    
 )       # Found 2023 images belonging to 2 classes.
 
-spe = len(xy_train)
+# 증폭
+augment_size = 5000
+randidx =  np.random.randint(xy_train[0][0].shape[0], size = augment_size)   # 랜덤한 정수값을 생성   / x_train.shape[0] = 340이라고 써도 된다.
+x_agumented = xy_train[0][0][randidx].copy()
+y_agumented = xy_train[0][1][randidx].copy()
 
-print(xy_train)
-# <tensorflow.python.keras.preprocessing.image.DirectoryIterator object at 0x000001D297074F40>
+print(randidx.shape)       # (340,)
+print(type(randidx))       # <class 'numpy.ndarray'>
 
-print(xy_train[31])       # 마지막 batch
-print(xy_train[0][0])
-print(xy_train[0][1])
-print(xy_train[0][0].shape, xy_train[0][1].shape)         # (10, 150, 150, 3), (10,)   # 흑백은 알아서 찾아라
+x_train = xy_train[0][0].reshape(xy_train[0][0].shape[0],50,50,3)
+x_test = xy_test[0][0].reshape(xy_test[0][0].shape[0],50,50,3)
 
-print(type(xy_train))       # <class 'tensorflow.python.keras.preprocessing.image.DirectoryIterator'>
-print(type(xy_train[0]))    # <class 'tuple'>
-print(type(xy_train[0][0])) # <class 'numpy.ndarray'>
-print(type(xy_train[0][1])) # <class 'numpy.ndarray'>
+# 증폭한 데이터 합침
+augment_data = train_datagen.flow(x_agumented, 
+                                  y_agumented,
+                                  batch_size=augment_size,
+                                  shuffle=False,
+                                #   save_to_dir="../_temp"
+                                  )
+
+x_train = np.concatenate((x_train, augment_data[0][0]))
+y_train = np.concatenate((xy_train[0][1], augment_data[0][1]))
 
 #2. 모델 구성
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPool2D
 
 model = Sequential()
-model.add(Conv2D(32,(2,2), padding='same', input_shape = (50,50,3)))
+model.add(Conv2D(32, (2,2), input_shape=(50,50,3)))
 model.add(MaxPool2D(2))
-model.add(Conv2D(16,(2,2)))
+model.add(Conv2D(16, (2,2)))
 model.add(MaxPool2D(2))
 model.add(Flatten())
-model.add(Dense(64,activation='relu'))
-model.add(Dense(32,activation='relu')) 
-model.add(Dense(16,activation='relu'))
-model.add(Dense(1,activation='sigmoid'))
+model.add(Dense(32))
+model.add(Dropout(0.2))
+model.add(Dense(16))
+model.add(Dense(8))
+model.add(Dense(1, activation='sigmoid'))
 
 #3. 컴파일, 훈련
 model.compile(loss = 'binary_crossentropy', optimizer='adam', metrics=['acc'])
@@ -76,40 +88,23 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import datetime
 # model.fit(xy_train[0][0], xy_train[0][1])
 
-spe = len(xy_train)
-
+import datetime
 date = datetime.datetime.now()
 datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
-filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       
-model_path = "".join([filepath, 'k48_1_cat_dog_IDG_', datetime, '_', filename])
+filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 2500(에포수)-0.3724(val_loss).hdf5
+model_path = "".join([filepath, 'k50_4_brain_', datetime, '_', filename])
 
-es = EarlyStopping(monitor='val_loss', patience=5, mode = 'auto', restore_best_weights=True)
+es = EarlyStopping(monitor='val_loss', patience=20, mode = 'auto', restore_best_weights=True)
 mcp = ModelCheckpoint(monitor='val_loss', mode = 'auto', verbose=1, save_best_only= True, filepath = model_path)
 
 start = time.time()
-hist = model.fit_generator(xy_train, epochs=4, steps_per_epoch=spe,    # steps_per_epoch = 전체 데이터 수 / batch = 160 / 5 = 32
-                    validation_data=xy_test,
-                    validation_steps=4, callbacks=[es, mcp]
-                    )
+hist = model.fit(x_train, y_train, epochs=100,
+                 batch_size = 128, 
+                 validation_split = 0.3, 
+                 callbacks = [es,mcp])
 end = time.time() - start
-
-print("걸린시간 : ", round(end, 3), '초')
-
-acc = hist.history['acc']
-val_acc = hist.history['val_acc']
-loss = hist.history['loss']
-val_loss = hist.history['val_loss']
-
-import matplotlib.pyplot as plt
-from tensorflow.keras.preprocessing import image
-
-print('loss : ', loss[-1])
-print('val_loss : ', val_loss[-1])
-print('acc : ', acc[-1])
-print('val_acc : ', val_acc[-1])
-
 
 #4. 평가, 예측
 
@@ -122,14 +117,14 @@ sample_directory = '../_data/image/MJ/'
 sample_image = sample_directory + "MJ.jpg"
 
 # 샘플 케이스 확인
-image_ = plt.imread(str(sample_image))
-plt.title("Test Case")
-plt.imshow(image_)
-plt.axis('Off')
-plt.show()
+# image_ = plt.imread(str(sample_image))
+# plt.title("Test Case")
+# plt.imshow(image_)
+# plt.axis('Off')
+# plt.show()
 
 print("-- Evaluate --")
-scores = model.evaluate_generator(xy_test, steps=5)
+scores = model.evaluate(x_test)
 print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
 
 print("-- Predict --")
@@ -153,10 +148,3 @@ elif(classes[0][0]>=0.5):
     print(f"당신은 {round(dog,2)} % 확률로 개 입니다")
 else:
     print("ERROR")
-    
-    
-# -- Predict --
-# [[0.7261659]]
-# {'cats': 0, 'dogs': 1}
-# 당신은 72.62 % 확률로 개 입니다
-
