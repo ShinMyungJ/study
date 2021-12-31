@@ -5,57 +5,62 @@
 
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.python.keras.callbacks import EarlyStopping
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, Dense, Flatten, MaxPool2D, Dropout
 import time
+import warnings
+warnings.filterwarnings('ignore')
 
-from tensorflow.python.keras.layers.core import Dropout
-
+#1. 데이터
 train_datagen = ImageDataGenerator(
-    rescale=1./255,
-    horizontal_flip=True,
-    # vertical_flip=True,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
-    rotation_range=5,
-    zoom_range=0.1,
+    rescale = 1./255,              
+    horizontal_flip = True,        
+    # vertical_flip= True,           
+    width_shift_range = 0.1,       
+    height_shift_range= 0.1,       
+    rotation_range= 5,
+    zoom_range = 0.1,              
     # shear_range=0.7,
-    fill_mode='nearest'
-)
+    fill_mode = 'nearest',
+    validation_split=0.3       
+    )             
+
 test_datagen = ImageDataGenerator(
-    rescale=1./255
+    rescale=1./255,
+    validation_split=0.3
 )
 
-# D:\_data\image\brain
-
-batch_num = 8100
+batch_num = 10
 xy_train = train_datagen.flow_from_directory(
-    '../_data/image/cat_dog/training_set',
-    target_size=(50, 50),                         # size는 원하는 사이즈로 조정해 줌. 단, 너무 크기 차이가 나면 안좋을 수 있음
+    '../_data/image/men_women/data',
+    target_size=(150,150),
     batch_size=batch_num,
     class_mode='binary',
+    subset='training',
     shuffle=True
-)       # Found 8005 images belonging to 2 classes.
+)      # Found 719 images belonging to 2 classes.
 
 xy_test = test_datagen.flow_from_directory(
-    '../_data/image/cat_dog/test_set',
-    target_size=(50, 50),
+    '../_data/image/men_women/data', # same directory as training data
+    target_size=(150,150),
     batch_size=batch_num,
-    class_mode='binary'    
-)       # Found 2023 images belonging to 2 classes.
+    class_mode='binary',
+    subset='validation',
+)      # Found 308 images belonging to 2 classes.
+
 
 # 증폭
 augment_size = 20000
-randidx =  np.random.randint(xy_train[0][0].shape[0], size = augment_size)   # 랜덤한 정수값을 생성   / x_train.shape[0] = 340이라고 써도 된다.
+randidx = np.random.randint(xy_train[0][0].shape[0], size = augment_size)
 x_augmented = xy_train[0][0][randidx].copy()
 y_augmented = xy_train[0][1][randidx].copy()
 
-print(randidx.shape)       # (340,)
-print(type(randidx))       # <class 'numpy.ndarray'>
-
-x_train = xy_train[0][0].reshape(xy_train[0][0].shape[0],50,50,3)
-x_test = xy_test[0][0].reshape(xy_test[0][0].shape[0],50,50,3)
+x_train = xy_train[0][0].reshape(xy_train[0][0].shape[0],150,150,3)
+x_test = xy_test[0][0].reshape(xy_test[0][0].shape[0],150,150,3)
 
 # 증폭한 데이터 합침
-x_augmented = train_datagen.flow(x_augmented, 
+x_augmented = train_datagen.flow(x_augmented,
                                  y_augmented,
                                  batch_size=augment_size,
                                  shuffle=False,
@@ -65,26 +70,25 @@ x_augmented = train_datagen.flow(x_augmented,
 x_train = np.concatenate((x_train, x_augmented))
 y_train = np.concatenate((xy_train[0][1], y_augmented))
 
-# print(x_train.shape, y_train.shape)     # (13005, 50, 50, 3) (13005,)
+# print(x_train.shape, y_train.shape)
 
 #2. 모델 구성
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPool2D
 
 model = Sequential()
-model.add(Conv2D(32, (2,2), input_shape=(50,50,3)))
-model.add(MaxPool2D(2))
-model.add(Conv2D(16, (2,2)))
-model.add(MaxPool2D(2))
+model.add(Conv2D(32, (2, 2), input_shape=(150, 150, 3)))
+model.add(MaxPool2D())
+model.add(Conv2D(32, (2,2), activation='relu'))
+model.add(MaxPool2D())
+model.add(Conv2D(32, (2,2), activation='relu'))
+model.add(MaxPool2D())
 model.add(Flatten())
-model.add(Dense(32))
+model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(16))
-model.add(Dense(8))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
 #3. 컴파일, 훈련
-model.compile(loss = 'binary_crossentropy', optimizer='adam', metrics=['acc'])
+model.compile(loss ='binary_crossentropy', optimizer='adam', metrics=['acc'])
 
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import datetime
@@ -93,14 +97,14 @@ datetime = date.strftime("%m%d_%H%M")   # 월일_시분
 
 filepath = './_ModelCheckPoint/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 2500(에포수)-0.3724(val_loss).hdf5
-model_path = "".join([filepath, 'k50_5_cat_dog_', datetime, '_', filename])
+model_path = "".join([filepath, 'k50_8_men_women_', datetime, '_', filename])
 
 es = EarlyStopping(monitor='val_loss', patience=20, mode = 'auto', restore_best_weights=True)
 mcp = ModelCheckpoint(monitor='val_loss', mode = 'auto', verbose=1, save_best_only= True, filepath = model_path)
 
 start = time.time()
 hist = model.fit(x_train, y_train, epochs=100,
-                 batch_size = 32, 
+                 batch_size = 128, 
                  validation_split = 0.2, 
                  callbacks = [es,mcp])
 end = time.time() - start
@@ -114,7 +118,7 @@ from tensorflow.keras.preprocessing import image
 # 샘플 케이스 경로지정
 #Found 1 images belonging to 1 classes.
 sample_directory = '../_data/image/MJ/'
-sample_image = sample_directory + "MJ.jpg"
+sample_image = sample_directory + "MJ2.png"
 
 # 샘플 케이스 확인
 # image_ = plt.imread(str(sample_image))
@@ -128,7 +132,7 @@ scores = model.evaluate_generator(xy_test)
 print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
 
 print("-- Predict --")
-image_ = image.load_img(str(sample_image), target_size=(50, 50, 3))
+image_ = image.load_img(str(sample_image), target_size=(150, 150, 3))
 x = image.img_to_array(image_)
 x = np.expand_dims(x, axis=0)
 x /=255.
@@ -139,18 +143,12 @@ classes = model.predict(images, batch_size=40)
 print(classes)
 xy_test.reset()
 print(xy_test.class_indices)
-# {'cats': 0, 'dogs': 1}
+# {'men': 0, 'women': 1}
 if(classes[0][0]<=0.5):
-    cat = 100 - classes[0][0]*100
-    print(f"당신은 {round(cat,2)} % 확률로 고양이 입니다")
+    men = 100 - classes[0][0]*100
+    print(f"당신은 {round(men,2)} % 확률로 남자 입니다")
 elif(classes[0][0]>=0.5):
-    dog = classes[0][0]*100
-    print(f"당신은 {round(dog,2)} % 확률로 개 입니다")
+    women = classes[0][0]*100
+    print(f"당신은 {round(women,2)} % 확률로 여자 입니다")
 else:
     print("ERROR")
-    
-# acc: 66.24%
-# -- Predict --
-# [[0.6419432]]
-# {'cats': 0, 'dogs': 1}
-# 당신은 64.19 % 확률로 개 입니다

@@ -56,15 +56,17 @@ x_train = xy_train[0][0].reshape(xy_train[0][0].shape[0],50,50,3)
 x_test = xy_test[0][0].reshape(xy_test[0][0].shape[0],50,50,3)
 
 # 증폭한 데이터 합침
-augment_data = train_datagen.flow(x_augmented, 
-                                  y_augmented,
-                                  batch_size=augment_size,
-                                  shuffle=False,
-                                #   save_to_dir="../_temp"
-                                  )
+x_augmented = train_datagen.flow(x_augmented, 
+                                 y_augmented,
+                                 batch_size=augment_size,
+                                 shuffle=False,
+                                # save_to_dir="../_temp"
+                                 ).next()[0]
 
-x_train = np.concatenate((x_train, augment_data[0][0]))
-y_train = np.concatenate((xy_train[0][1], augment_data[0][1]))
+print(x_augmented.shape)
+
+x_train = np.concatenate((x_train, x_augmented))
+y_train = np.concatenate((xy_train[0][1], y_augmented))
 
 #2. 모델 구성
 from tensorflow.keras.models import Sequential
@@ -102,10 +104,11 @@ mcp = ModelCheckpoint(monitor='val_loss', mode = 'auto', verbose=1, save_best_on
 
 start = time.time()
 hist = model.fit(x_train, y_train, epochs=100,
-                 batch_size = 256, 
-                 validation_split = 0.3, 
+                 batch_size = 32, 
+                 validation_split = 0.2, 
                  callbacks = [es,mcp])
 end = time.time() - start
+print("걸린시간 : ", round(end, 3), '초')
 
 #4. 평가, 예측
 print ('====================== 1. 기본출력 ========================')
@@ -116,5 +119,5 @@ print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
 predict = model.predict(x_test)
 print(predict[:3])
 
-# loss: 19.44
-# acc: 92.50%
+# loss: 2.54
+# acc: 97.50%
