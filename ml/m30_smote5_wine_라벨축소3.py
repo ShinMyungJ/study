@@ -1,0 +1,130 @@
+# 실습 1.
+
+# 3, 4 -> 0
+# 5, 6, 7 -> 1
+# 8, 9 -> 2
+
+# 3, 4, 5 -> 0
+# 6 -> 1
+# 7, 8, 9 -> 2
+
+# 성능 비교 !!! // acc, f1
+# smote 전후 / 라벨축소 전후 -> 총 8가지 결과
+
+import numpy as np
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
+from sklearn.preprocessing import QuantileTransformer, PowerTransformer, PolynomialFeatures, MinMaxScaler, MaxAbsScaler, StandardScaler, RobustScaler
+from xgboost import XGBClassifier
+import warnings
+warnings.filterwarnings('ignore')
+from sklearn.metrics import accuracy_score, f1_score
+from pprint import pprint
+from imblearn.over_sampling import SMOTE
+
+import pandas as pd
+
+#1. 데이터 
+path = '../_data/winequlity/'   
+datasets = pd.read_csv(path+'winequality-white.csv',
+                       index_col=None, sep=';', header=0, dtype=float)
+
+# datasets = datasets.drop(['sulphates'], axis=1) # axis=1 컬럼 삭제할 때 필요함
+datasets = datasets.values      # numpy로 변환
+# print(type(datasets))
+# print(datasets.shape)
+
+x = datasets[:, :-1]
+y = datasets[:, -1]
+
+y = np.where(y <= 5, 5, y)
+y = np.where(y >= 7, 7, y)
+
+# for index, value in enumerate(y):
+#     if value == 9 :
+#         y[index] = 2
+#     elif value == 8 :
+#         y[index] = 2
+#     elif value == 7 :
+#         y[index] = 1
+#     elif value == 6 :
+#         y[index] = 1
+#     elif value == 5 :
+#         y[index] = 1
+#     elif value == 4 :
+#         y[index] = 0
+#     elif value == 3 :
+#         y[index] = 0
+#     else:
+#         y[index] = 0
+        
+# print(pd.Series(y).value_counts())
+
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, train_size=0.8, stratify=y, shuffle=True, random_state=66)
+
+print(pd.Series(y_train).value_counts())
+smote = SMOTE(random_state=66, k_neighbors=3)
+x_train, y_train = smote.fit_resample(x_train, y_train)
+print(pd.Series(y_train).value_counts())
+
+
+scaler = StandardScaler()
+x_train = scaler.fit_transform(x_train)
+x_test = scaler.transform(x_test)
+print(x_train.shape, x_test.shape)
+
+#2. 모델
+model = XGBClassifier(
+                    #  n_jobs=-1,
+                     n_estimators = 1000,
+                     learning_rate = 0.1,
+                     max_depth = 6,
+                     min_child_weight = 1,
+                     subsample = 0.5,
+                     colsample_bytree = 1,
+                     reg_alpha = 1,         # 규제  L1
+                     reg_lambda = 0,        # 규제  L2
+                     tree_method = 'gpu_hist',
+                     predictor = 'gpu_predictor',
+                     gpu_id=0,
+                      )
+
+#3. 훈련
+model.fit(x_train, y_train, eval_metric='merror')
+
+#4. 평가, 예측
+score = model.score(x_test, y_test)
+y_predict = model.predict(x_test)
+
+print('라벨 : ', np.unique(y, return_counts=True))
+# 라벨 :  (array([ 3.,  4.,   5.,   6.,   7.,   8.,   9.]),
+#          array([20,  163, 1457, 2198,  880,  175,   5], dtype=int64))
+print("model.score : ", score)
+print("accuracy score : ", round(accuracy_score(y_test, y_predict),4))
+print("f1 score : ", round(f1_score(y_test, y_predict, average='macro'),4))
+
+# 1. smote전, label축소 전
+# accuracy score :  0.6684
+# f1 score :  0.4076
+
+# 2. smote후, label축소 전
+# accuracy score :  0.6633
+# f1 score :  0.3978
+
+# 3. smote전, label-1
+# accuracy score :  0.7173
+# f1 score :  0.717
+
+# 4. smote후, label-1
+# accuracy score :  0.7143
+# f1 score :  0.7135
+
+# 5. smote전, label-2
+# accuracy score :  0.9469
+# f1 score :  0.6565
+
+# 6. smote후, label-2
+# accuracy score :  0.9276
+# f1 score :  0.6218
