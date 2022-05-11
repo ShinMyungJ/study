@@ -75,6 +75,31 @@ print("XGBClassifier : ", result_4)
 print("accuracy_score : ", acc_4)
 print(model_4.feature_importances_)
 
+print(model1.feature_importances_)
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+def plot_feature_importance_dataset(model):
+    n_features = datasets.data.shape[1]
+    plt.barh(np.arange(n_features), model.feature_importances_,
+             align = 'center')
+    plt.yticks(np.arange(n_features), datasets.feature_names)
+    plt.xlabel('Feature Importance')
+    plt.ylabel('Features')
+    plt.ylim(-1, n_features)
+    
+plt.figure(figsize=(20,20))
+plt.subplot(3, 3, 1)
+plot_feature_importance_dataset(model1)
+plt.subplot(3, 3, 2)
+plot_feature_importance_dataset(model2)
+plt.subplot(3, 3, 3)
+plot_feature_importance_dataset(model3)
+plt.subplot(3, 3, 4)
+plot_feature_importance_dataset(model4)
+plt.show()
+
 # DecisionTreeClassifier :  0.9333333333333333
 # accuracy_score :  0.9333333333333333
 # [0.0125026  0.         0.53835801 0.44913938]
