@@ -1,3 +1,13 @@
+'''
+차원 축소
+차원(dimention):
+    예를 들어 (1000, 500)의 데이터를 모델링하여 실행 했을 때
+    y=w1x1+w2x2....w500x500 + b의 연산을 하게된다. >> 자원 낭비가 심하다. 
+    
+  
+컬럼, 피쳐, 열 
+왜 축소를 할까?
+'''
 import numpy as np
 from sklearn.datasets import load_boston, fetch_california_housing, load_breast_cancer
 from sklearn.decomposition import PCA
