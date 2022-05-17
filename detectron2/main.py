@@ -2,4 +2,4 @@ from Detector import *
 
 detector = Detector()
 
-detector = 
+detector.onImage("images/1.jpg")
