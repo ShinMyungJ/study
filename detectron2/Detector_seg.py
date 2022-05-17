@@ -30,6 +30,8 @@ class Detector:
     
     viz = Visualizer(image[:, :, ::-1], metadata = MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]),
                      instance_mode = ColorMode.IMAGE_BW)
+#                          instance_mode = ColorMode.SEGMENTATION) #color difference high ex)ColorMode.IMAGE
+
     
     output = viz.draw_instance_predictions(predictions["instances"].to("cpu"))
     
